@@ -1,0 +1,4 @@
+0 Coconut Rhinoceros Beetle
+1 Coconut Leaf Beetle
+2 Coconut Scale Insect
+3 Unclassified
