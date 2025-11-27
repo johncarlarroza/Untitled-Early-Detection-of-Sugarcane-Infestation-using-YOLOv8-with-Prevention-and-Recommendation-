@@ -2,16 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter_tflite/flutter_tflite.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'dart:io';
+import 'dart:typed_data';
 
-class OffCamera extends StatefulWidget {
-  const OffCamera({Key? key}) : super(key: key);
+class CameraPage extends StatefulWidget {
+  const CameraPage({Key? key}) : super(key: key);
 
   @override
-  State<OffCamera> createState() => _CameraPageState();
+  State<CameraPage> createState() => _CameraPageState();
 }
 
-class _CameraPageState extends State<OffCamera> {
+class _CameraPageState extends State<CameraPage> {
   CameraController? _cameraController;
   File? _image;
   String? _label;
@@ -65,17 +67,19 @@ class _CameraPageState extends State<OffCamera> {
     });
   }
 
-  String? _getPestDescription(String label) {
-    const descriptions = {
-      "Coconut Rhinoceros Beetle":
-          "The Coconut Rhinoceros Beetle is a destructive pest known for its distinctive horn.",
-      "Coconut Leaf Beetle":
-          "The coconut leaf beetle is one of the most damaging pests of coconut and other palms. The larvae and adults of the beetle feed on the soft tissues of the youngest leaf in the throat of the palm. ",
-      "Coconut Scale Insect":
-          "The Coconut Scale Insect is a sap-sucking pest that infests coconut palms.",
-      "Unclassified": "Unable to classify this pest. Please try another image.",
-    };
-    return descriptions[label];
+  String? _getPestDescription(String? label) {
+    switch (label) {
+      case "Coconut Rhinoceros Beetle":
+        return "The Coconut Rhinoceros Beetle is a destructive pest known for its distinctive horn.";
+      case "Coconut Leaf Beetle":
+        return "The coconut leaf beetle is a damaging pest of coconut and other palms. It feeds on soft tissues of young leaves.";
+      case "Coconut Scale Insect":
+        return "The Coconut Scale Insect is a sap-sucking pest that weakens coconut palms.";
+      case "Unclassified":
+        return "Unable to classify this pest. Please try another image.";
+      default:
+        return "";
+    }
   }
 
   Future<void> _initializeCamera() async {
@@ -91,17 +95,19 @@ class _CameraPageState extends State<OffCamera> {
       if (!mounted) return;
 
       await _cameraController?.setFlashMode(_flashMode);
+
       setState(() {
         _isCameraInitialized = true;
       });
     } catch (e) {
-      print('Error initializing camera: $e');
+      print("Camera init error: $e");
     }
   }
 
   Future<void> _captureImage() async {
     if (_cameraController == null || !_cameraController!.value.isInitialized)
       return;
+
     try {
       final XFile file = await _cameraController!.takePicture();
       if (!mounted) return;
@@ -113,24 +119,22 @@ class _CameraPageState extends State<OffCamera> {
         _description = null;
         _isImageClassified = false;
       });
+
       await _classifyImage(_image!);
     } catch (e) {
-      print(e);
+      print("Capture error: $e");
     }
   }
 
   Future<void> _getImageFromGallery() async {
-    if (_isImagePickerActive) return; // Check if picker is already active
-    setState(() {
-      _isImagePickerActive = true; // Set flag to true
-    });
+    if (_isImagePickerActive) return;
+
+    setState(() => _isImagePickerActive = true);
 
     final picker = ImagePicker();
     final XFile? image = await picker.pickImage(source: ImageSource.gallery);
 
-    setState(() {
-      _isImagePickerActive = false; // Reset flag after picking
-    });
+    setState(() => _isImagePickerActive = false);
 
     if (image == null || !mounted) return;
 
@@ -145,15 +149,44 @@ class _CameraPageState extends State<OffCamera> {
     await _classifyImage(_image!);
   }
 
-  Future<void> _switchCamera() async {
+  Future<void> _saveToGallery() async {
+    if (_image == null) return;
+
+    try {
+      final bytes = await _image!.readAsBytes();
+
+      final result = await ImageGallerySaver.saveImage(
+        Uint8List.fromList(bytes),
+        quality: 100,
+        name: "pest_image_${DateTime.now().millisecondsSinceEpoch}",
+      );
+
+      if (result["isSuccess"] == true) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Image saved to gallery.")),
+        );
+      } else {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text("Failed to save image.")));
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Error saving: $e")));
+    }
+  }
+
+  void _switchCamera() async {
     _selectedCameraIndex = _selectedCameraIndex == 0 ? 1 : 0;
     await _initializeCamera();
   }
 
   void _toggleFlash() {
     setState(() {
-      _flashMode =
-          _flashMode == FlashMode.off ? FlashMode.torch : FlashMode.off;
+      _flashMode = _flashMode == FlashMode.off
+          ? FlashMode.torch
+          : FlashMode.off;
     });
     _cameraController?.setFlashMode(_flashMode);
   }
@@ -166,34 +199,6 @@ class _CameraPageState extends State<OffCamera> {
       _confidence = null;
       _description = null;
     });
-  }
-
-  void _viewFullDetails() {
-    print("View Full Details clicked");
-  }
-
-  void _saveData() {
-    print("Save Data clicked");
-  }
-
-  void _showHelpDialog() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text("Help"),
-          content: Image.asset('assets/tips.png'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text("Close"),
-            ),
-          ],
-        );
-      },
-    );
   }
 
   @override
@@ -212,229 +217,187 @@ class _CameraPageState extends State<OffCamera> {
 
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
+    double screenHeight = MediaQuery.of(context).size.height;
+
+    double focusBoxWidth = 250.0;
+    double focusBoxHeight = 400.0;
+
+    double focusBoxTop = (screenHeight - focusBoxHeight) / 4;
+    double focusBoxLeft = (screenWidth - focusBoxWidth) / 2;
+
     return Scaffold(
-      body: Stack(children: [
-        if (_isCameraInitialized)
-          SizedBox.expand(
-            child: CameraPreview(_cameraController!),
-          )
-        else
-          const Center(child: CircularProgressIndicator()),
+      body: Stack(
+        children: [
+          // Camera Preview
+          if (_isCameraInitialized)
+            SizedBox.expand(child: CameraPreview(_cameraController!))
+          else
+            const Center(child: CircularProgressIndicator()),
 
-        // Top left icons: Flash and Switch Camera
-        Positioned(
-          top: 40,
-          left: 16,
-          child: Row(
-            children: [
-              IconButton(
-                icon: Icon(
-                  _flashMode == FlashMode.torch
-                      ? Icons.flash_on
-                      : Icons.flash_off,
-                  color: Colors.white,
-                ),
-                onPressed: _toggleFlash,
-              ),
-              const SizedBox(width: 16),
-              IconButton(
-                icon: const Icon(Icons.switch_camera, color: Colors.white),
-                onPressed: _switchCamera,
-              ),
-            ],
-          ),
-        ),
-
-        // Bottom controls: Photo, Capture, and Help
-        Positioned(
-          bottom: 40,
-          left: 0,
-          right: 0,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  FloatingActionButton(
-                    onPressed: _getImageFromGallery,
-                    tooltip: 'Pick from Gallery',
-                    backgroundColor: Colors.white,
-                    child: const Icon(Icons.photo, color: Colors.black),
-                  ),
-                  const SizedBox(height: 8),
-                  const Text("Photos", style: TextStyle(color: Colors.white70)),
-                ],
-              ),
-
-              // Capture button
-              Container(
-                width: 80,
-                height: 80,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: LinearGradient(
-                    colors: [Colors.green, Colors.lightBlueAccent],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.3),
-                      blurRadius: 8,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: FloatingActionButton(
-                  onPressed: _captureImage,
-                  tooltip: 'Capture Image',
-                  backgroundColor: Colors.transparent,
-                  elevation: 0,
-                  child:
-                      const Icon(Icons.camera, color: Colors.white, size: 30),
-                ),
-              ),
-
-              // Help button
-              Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  FloatingActionButton(
-                    onPressed: _showHelpDialog,
-                    tooltip: 'Help',
-                    backgroundColor: Colors.white,
-                    child: const Icon(Icons.help_outline, color: Colors.black),
-                  ),
-                  const SizedBox(height: 8),
-                  const Text("Snap Tips",
-                      style: TextStyle(color: Colors.white70)),
-                ],
-              ),
-            ],
-          ),
-        ),
-
-        // Classification card overlay
-        if (_isImageClassified)
-          GestureDetector(
-            onTap: _resetClassification,
+          // Focus Box
+          Positioned(
+            top: focusBoxTop,
+            left: focusBoxLeft,
             child: Container(
-              color: Colors.black54,
-              child: Center(
-                child: Card(
-                  elevation: 20,
-                  clipBehavior: Clip.hardEdge,
-                  child: SizedBox(
-                    width: 350,
-                    height: 600,
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: SingleChildScrollView(
-                        // Wrap the Column in SingleChildScrollView
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Stack(
-                              children: [
-                                Container(
-                                  height: 280,
-                                  width: 280,
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(12),
-                                    image: _image == null
-                                        ? const DecorationImage(
-                                            image:
-                                                AssetImage('assets/upload.jpg'),
-                                          )
-                                        : DecorationImage(
-                                            image: FileImage(_image!),
-                                            fit: BoxFit.fill,
-                                          ),
+              width: focusBoxWidth,
+              height: focusBoxHeight,
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.greenAccent, width: 2),
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+          ),
+
+          // Top buttons
+          Positioned(
+            top: 40,
+            left: 16,
+            child: Row(
+              children: [
+                IconButton(
+                  icon: Icon(
+                    _flashMode == FlashMode.torch
+                        ? Icons.flash_on
+                        : Icons.flash_off,
+                    color: Colors.white,
+                  ),
+                  onPressed: _toggleFlash,
+                ),
+                const SizedBox(width: 16),
+                IconButton(
+                  icon: const Icon(Icons.switch_camera, color: Colors.white),
+                  onPressed: _switchCamera,
+                ),
+              ],
+            ),
+          ),
+
+          // Bottom controls
+          Positioned(
+            bottom: 40,
+            left: 0,
+            right: 0,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                FloatingActionButton(
+                  onPressed: _getImageFromGallery,
+                  backgroundColor: Colors.white,
+                  child: const Icon(Icons.photo, color: Colors.black),
+                ),
+                Container(
+                  width: 80,
+                  height: 80,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: LinearGradient(
+                      colors: [Colors.green, Colors.lightBlueAccent],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                  ),
+                  child: FloatingActionButton(
+                    onPressed: _captureImage,
+                    backgroundColor: Colors.transparent,
+                    elevation: 0,
+                    child: const Icon(
+                      Icons.camera,
+                      color: Colors.white,
+                      size: 30,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          // Result Overlay
+          if (_isImageClassified)
+            GestureDetector(
+              onTap: _resetClassification,
+              child: Container(
+                color: Colors.black54,
+                child: Center(
+                  child: Card(
+                    elevation: 20,
+                    clipBehavior: Clip.hardEdge,
+                    child: SizedBox(
+                      width: 380,
+                      height: 500,
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: SingleChildScrollView(
+                          child: Column(
+                            children: [
+                              Stack(
+                                children: [
+                                  Container(
+                                    height: 280,
+                                    width: 280,
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(12),
+                                      image: _image == null
+                                          ? const DecorationImage(
+                                              image: AssetImage(
+                                                'assets/upload.jpg',
+                                              ),
+                                            )
+                                          : DecorationImage(
+                                              image: FileImage(_image!),
+                                              fit: BoxFit.fill,
+                                            ),
+                                    ),
                                   ),
-                                ),
-                                Positioned(
-                                  right: 8,
-                                  top: 8,
-                                  child: IconButton(
-                                    icon: const Icon(Icons.close,
-                                        color: Colors.red),
-                                    onPressed: _resetClassification,
+                                  Positioned(
+                                    right: 8,
+                                    top: 8,
+                                    child: IconButton(
+                                      icon: const Icon(
+                                        Icons.close,
+                                        color: Colors.red,
+                                      ),
+                                      onPressed: _resetClassification,
+                                    ),
                                   ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 12),
-                            if (_label != null)
-                              SingleChildScrollView(
-                                child: Column(
-                                  children: [
-                                    Text(
-                                      _label!,
-                                      style: const TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                    const SizedBox(height: 12),
-                                    if (_confidence != null)
-                                      Text(
-                                        "The Accuracy is ${_confidence!.toStringAsFixed(0)}%",
-                                        style: const TextStyle(fontSize: 18),
-                                      ),
-                                    const SizedBox(height: 12),
-                                    if (_description != null)
-                                      Text(
-                                        _description!,
-                                        style: const TextStyle(
-                                            fontSize: 16,
-                                            fontStyle: FontStyle.italic,
-                                            color: Colors.grey),
-                                        textAlign: TextAlign.center,
-                                      ),
-                                    const SizedBox(height: 12),
-                                    // Add three separate text blocks below
-                                    Text(
-                                      'The coconut rhinoceros beetle (Oryctes rhinoceros) is a species of beetle in the Scarabaeidae family. It is a major pest of coconut palms, attacking the growing shoots of the palms, which can lead to reduced fruit production and even the death of the trees.',
-                                      style: const TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 8),
-                                    Text(
-                                      'Adult beetles bore into the crowns of coconut palms and feed on the sap. This boring can cause significant damage to the palms, creating entry points for pathogens. The larvae develop in decaying organic matter, such as dead palm trunks and compost heaps',
-                                      style: const TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 8),
-                                    Text(
-                                      'Mitigation: Control measures include the use of pheromone traps to capture adult beetles, biological control using entomopathogenic fungi, and cultural practices such as removing and destroying breeding sites. Chemical control can also be effective but is generally used as a last resort.',
-                                      style: const TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                  ],
-                                ),
+                                ],
                               ),
-                            const SizedBox(height: 12),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
-                              children: [
-                                ElevatedButton(
-                                  onPressed: _viewFullDetails,
-                                  child: const Text("View Full Details"),
+                              const SizedBox(height: 12),
+                              if (_label != null)
+                                Text(
+                                  _label!,
+                                  style: const TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
-                                ElevatedButton(
-                                  onPressed: _saveData,
-                                  child: const Text("Save Data"),
+                              const SizedBox(height: 12),
+                              if (_confidence != null)
+                                Text(
+                                  "Accuracy: ${_confidence!.toStringAsFixed(0)}%",
+                                  style: const TextStyle(fontSize: 18),
                                 ),
-                              ],
-                            ),
-                          ],
+                              const SizedBox(height: 12),
+                              if (_description != null)
+                                Text(
+                                  _description!,
+                                  textAlign: TextAlign.center,
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontStyle: FontStyle.italic,
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                              const SizedBox(height: 20),
+
+                              // Save Image Button
+                              ElevatedButton(
+                                onPressed: _saveToGallery,
+                                child: const Text("Save Image to Gallery"),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
@@ -442,8 +405,8 @@ class _CameraPageState extends State<OffCamera> {
                 ),
               ),
             ),
-          ),
-      ]),
+        ],
+      ),
     );
   }
 }
