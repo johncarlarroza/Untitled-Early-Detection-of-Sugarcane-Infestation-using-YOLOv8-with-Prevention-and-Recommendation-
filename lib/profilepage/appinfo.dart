@@ -24,9 +24,9 @@ class AppInfoPage extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: const [
-                    // Image(image: AssetImage('assets/cict.png'), height: 60),
-                    // SizedBox(width: 20),
-                    // Image(image: AssetImage('assets/pca.png'), height: 60),
+                    Image(image: AssetImage('assets/cict.png'), height: 60),
+                    SizedBox(width: 20),
+                    Image(image: AssetImage('assets/pca.png'), height: 60),
                   ],
                 ),
                 const SizedBox(height: 20),
@@ -40,8 +40,7 @@ class AppInfoPage extends StatelessWidget {
                     'Pestecane provides high-quality pest control services, utilizing '
                     'environmentally friendly solutions to ensure your spaces remain '
                     'safe and pest-free. With years of experience and a commitment to '
-                    'customer satisfaction, Pestecane is your trusted partner in pest '
-                    'management.',
+                    'customer satisfaction/',
                     textAlign: TextAlign.center,
                     style: TextStyle(fontSize: 16),
                   ),

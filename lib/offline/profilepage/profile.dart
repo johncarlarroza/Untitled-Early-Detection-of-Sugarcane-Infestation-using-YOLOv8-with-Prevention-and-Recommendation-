@@ -9,31 +9,27 @@ class OffProfilePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Profile'),
-        automaticallyImplyLeading: false,
-      ),
+      appBar: AppBar(title: const Text(''), automaticallyImplyLeading: false),
       body: ListView(
         children: [
           // Edit Profile ListTile
-          ListTile(
-            leading: const Icon(Icons.edit),
-            title: const Text('Edit Profile'),
-            onTap: () {
-              _navigateToEditProfile(context); // Navigate to Edit Profile page
-            },
-          ),
+          // ListTile(
+          //   leading: const Icon(Icons.edit),
+          //   title: const Text('Edit Profile'),
+          //   onTap: () {
+          //     _navigateToEditProfile(context); // Navigate to Edit Profile page
+          //   },
+          // ),
           const Divider(), // Add a line separator between items
-
           // Suggestion ListTile
-          ListTile(
-            leading: const Icon(Icons.lightbulb_outline),
-            title: const Text('Suggestion'),
-            onTap: () {
-              _navigateToSuggestion(context); // Navigate to Suggestion page
-            },
-          ),
-          const Divider(), // Add a line separator between items
+          // ListTile(
+          //   leading: const Icon(Icons.lightbulb_outline),
+          //   title: const Text('Suggestion'),
+          //   onTap: () {
+          //     _navigateToSuggestion(context); // Navigate to Suggestion page
+          //   },
+          // ),
+          // const Divider(), // Add a line separator between items
 
           // App Info ListTile
           ListTile(
@@ -49,20 +45,20 @@ class OffProfilePage extends StatelessWidget {
     );
   }
 
-  // Navigation methods
-  void _navigateToEditProfile(BuildContext context) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const EditProfilePage()),
-    );
-  }
+  // // Navigation methods
+  // void _navigateToEditProfile(BuildContext context) {
+  //   Navigator.push(
+  //     context,
+  //     MaterialPageRoute(builder: (context) => const EditProfilePage()),
+  //   );
+  // }
 
-  void _navigateToSuggestion(BuildContext context) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => Suggestions()),
-    );
-  }
+  // void _navigateToSuggestion(BuildContext context) {
+  //   Navigator.push(
+  //     context,
+  //     MaterialPageRoute(builder: (context) => Suggestions()),
+  //   );
+  // }
 
   void _navigateToAppInfo(BuildContext context) {
     Navigator.push(

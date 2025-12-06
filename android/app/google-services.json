@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "836401596768",
+    "project_id": "earlydetectionofsugarcanepest",
+    "storage_bucket": "earlydetectionofsugarcanepest.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:836401596768:android:1d923a59fb3a20e5187605",
+        "android_client_info": {
+          "package_name": "com.example.untitled_earlydetectionpfsugarcanepests"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAxM_3fNEmrYptgcyUPbQz_c5_ocQLroLQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

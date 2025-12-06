@@ -138,7 +138,7 @@ class HomeContent extends StatelessWidget {
       imageUrl: 'assets/svariety.png',
     ),
     Infos(
-      name: 'Sugarcane Pests Control Measures',
+      name: 'Sugarcane Pest Control Measures',
       description: 'Different ways of pest mitigation controls.',
       imageUrl: 'assets/smitig.png',
     ),
@@ -160,7 +160,7 @@ class HomeContent extends StatelessWidget {
         context,
         MaterialPageRoute(builder: (context) => VariantListPage()),
       );
-    } else if (name == 'Sugarcane Pests Control Measures') {
+    } else if (name == 'Sugarcane Pest Control Measures') {
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => OffCocomitig()),

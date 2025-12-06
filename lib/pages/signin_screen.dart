@@ -2,6 +2,7 @@ import 'package:early_application_1/admin/admin_signin.dart';
 import 'package:early_application_1/features/user_auth/presentation/pages/sign_up_page.dart';
 import 'package:early_application_1/offline/home.dart';
 import 'package:early_application_1/pages/home.dart';
+import 'package:early_application_1/pages/signup_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../utils/color_utils.dart';
@@ -161,7 +162,7 @@ class _SignInScreenState extends State<SignInScreen> {
           onTap: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => const SignUpPage()),
+              MaterialPageRoute(builder: (context) => const SignUpScreen()),
             );
           },
           child: Container(

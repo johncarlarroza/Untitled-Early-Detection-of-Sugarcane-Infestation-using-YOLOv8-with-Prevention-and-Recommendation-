@@ -2,17 +2,17 @@ import 'dart:io';
 
 import 'package:early_application_1/features/app/splash_screen/splash_screen.dart';
 import 'package:early_application_1/pages/signin_screen.dart';
+import 'package:early_application_1/pages/signup_screen.dart';
 import 'package:flutter/material.dart';
 import 'camera/camera.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
-import 'package:flutter/foundation.dart'; // For kIsWeb
+import 'package:flutter/foundation.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-import 'features/user_auth/presentation/pages/sign_up_page.dart';
-import 'pages/home.dart'; // Import Firebase Auth
+import 'pages/home.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -20,11 +20,11 @@ void main() async {
   Platform.isAndroid
       ? await Firebase.initializeApp(
           options: const FirebaseOptions(
-            apiKey: "AIzaSyDT-I2rSCWxEulGhVdPm-7Yq19uuOShdFs",
-            appId: "1:668698779658:android:2f4bf28f2d2bd9d511bff3",
-            messagingSenderId: "668698779658",
-            projectId: "pestincocoonfirebase",
-            storageBucket: "pestincocoonfirebase.firebasestorage.app",
+            apiKey: "AIzaSyAxM_3fNEmrYptgcyUPbQz_c5_ocQLroLQ",
+            appId: "1:836401596768:android:1d923a59fb3a20e5187605",
+            messagingSenderId: "836401596768",
+            projectId: "earlydetectionofsugarcanepest",
+            storageBucket: "earlydetectionofsugarcanepest.firebasestorage.app",
           ),
         )
       : await Firebase.initializeApp();
@@ -44,7 +44,7 @@ class MyApp extends StatelessWidget {
       routes: {
         '/': (context) => const SplashScreen(child: SignInScreen()),
         '/login': (context) => const SignInScreen(),
-        '/signUp': (context) => const SignUpPage(),
+        '/signUp': (context) => const SignUpScreen(),
         '/home': (context) => const HomePage(),
       },
     );
