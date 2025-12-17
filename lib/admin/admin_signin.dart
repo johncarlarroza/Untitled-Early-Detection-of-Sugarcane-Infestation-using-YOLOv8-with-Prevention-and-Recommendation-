@@ -1,8 +1,10 @@
+import 'package:early_application_1/AdBasepage.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../utils/color_utils.dart';
 import '../reusable_widgets/reusable_widget.dart';
 import 'admin_dashboard.dart';
+import 'package:early_application_1/pages/signin_screen.dart';
 
 class AdminSignInPage extends StatefulWidget {
   const AdminSignInPage({Key? key}) : super(key: key);
@@ -17,19 +19,24 @@ class _AdminSignInPageState extends State<AdminSignInPage> {
 
   void _adminSignIn() async {
     try {
-      UserCredential userCredential = await FirebaseAuth.instance
-          .signInWithEmailAndPassword(
-            email: _emailTextController.text.trim(),
-            password: _passwordTextController.text.trim(),
-          );
+      final querySnapshot = await FirebaseFirestore.instance
+          .collection('admin')
+          .where('aduser', isEqualTo: _emailTextController.text.trim())
+          .where('adpass', isEqualTo: _passwordTextController.text.trim())
+          .get();
 
-      if (userCredential.user != null) {
+      if (querySnapshot.docs.isNotEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Admin logged in successfully!')),
         );
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const AdminDashboard()),
+          MaterialPageRoute(builder: (context) => const AdminBasePage()),
+        );
+      } else {
+        // No match found
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Invalid admin username or password')),
         );
       }
     } catch (e) {
@@ -78,7 +85,7 @@ class _AdminSignInPageState extends State<AdminSignInPage> {
                 logoWidget("assets/adminlogo.png"),
                 const SizedBox(height: 30),
                 reusableTextField(
-                  "Admin Email",
+                  "Admin Username",
                   Icons.person_outline,
                   false,
                   _emailTextController,
@@ -95,7 +102,12 @@ class _AdminSignInPageState extends State<AdminSignInPage> {
                 const SizedBox(height: 20),
                 GestureDetector(
                   onTap: () {
-                    Navigator.pop(context);
+                    Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const SignInScreen()),
+                      (route) => false, // removes all previous routes
+                    );
                   },
                   child: const Text(
                     "Back to User Login",

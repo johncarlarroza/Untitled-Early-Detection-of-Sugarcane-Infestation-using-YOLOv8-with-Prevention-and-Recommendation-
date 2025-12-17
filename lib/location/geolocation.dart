@@ -1,4 +1,4 @@
-import 'package:early_application_1/features/user_auth/presentation/pages/home_page.dart';
+import 'package:early_application_1/pages/home.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -6,19 +6,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
-  runApp(MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(title: 'Location App', home: LocationPage());
-  }
-}
+import 'package:flutter/services.dart';
 
 class LocationPage extends StatefulWidget {
   @override
@@ -27,7 +15,7 @@ class LocationPage extends StatefulWidget {
 
 class _LocationPageState extends State<LocationPage> {
   late GoogleMapController _mapController;
-  LatLng _initialPosition = LatLng(10.7202, 122.5621); // Default position
+  LatLng _initialPosition = LatLng(10.7202, 122.5621);
 
   @override
   void initState() {
@@ -35,101 +23,98 @@ class _LocationPageState extends State<LocationPage> {
     _setInitialLocation();
   }
 
-  Future<void> _setInitialLocation() async {
-    Position position = await getCurrentLocation();
-    setState(() {
-      _initialPosition = LatLng(position.latitude, position.longitude);
-    });
-  }
+  // PERMISSION HANDLER
+  Future<bool> requestLocationPermission() async {
+    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) return false;
 
-  Future<void> requestLocationPermission() async {
-    bool serviceEnabled;
-    LocationPermission permission;
+    LocationPermission permission = await Geolocator.checkPermission();
 
-    serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      return Future.error('Location services are disabled.');
-    }
-
-    permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {
-        return Future.error('Location permissions are denied');
-      }
     }
 
-    if (permission == LocationPermission.deniedForever) {
-      return Future.error(
-        'Location permissions are permanently denied, we cannot request permissions.',
-      );
+    if (permission == LocationPermission.denied ||
+        permission == LocationPermission.deniedForever) {
+      return false;
     }
+
+    return true;
   }
 
+  // GET CURRENT POSITION
   Future<Position> getCurrentLocation() async {
-    await requestLocationPermission();
+    bool granted = await requestLocationPermission();
+
+    if (!granted) {
+      throw Exception("Location permission not granted");
+    }
+
     return await Geolocator.getCurrentPosition(
       desiredAccuracy: LocationAccuracy.high,
     );
   }
 
-  Future<String> getPlaceName(double latitude, double longitude) async {
+  Future<void> _setInitialLocation() async {
     try {
-      List<Placemark> placemarks = await placemarkFromCoordinates(
-        latitude,
-        longitude,
-      );
-      if (placemarks.isNotEmpty) {
-        Placemark placemark = placemarks[0];
-        return '${placemark.locality}, ${placemark.country}';
-      } else {
-        return "Unknown location";
-      }
+      Position position = await getCurrentLocation();
+      setState(() {
+        _initialPosition = LatLng(position.latitude, position.longitude);
+      });
     } catch (e) {
-      print("Failed to get place name: $e");
-      return "Unknown location";
+      print("Initial location error: $e");
     }
   }
 
+  Future<String> getPlaceName(double lat, double lng) async {
+    try {
+      List<Placemark> placemarks = await placemarkFromCoordinates(lat, lng);
+      if (placemarks.isNotEmpty) {
+        return "${placemarks.first.locality}, ${placemarks.first.country}";
+      }
+    } catch (e) {
+      print("Place name error: $e");
+    }
+    return "Unknown location";
+  }
+
+  // SAVE LOCATION FIREBASE
   Future<void> saveLocationToFirebase(BuildContext context) async {
     try {
       Position position = await getCurrentLocation();
-      String placeName = await getPlaceName(
-        position.latitude,
-        position.longitude,
-      );
+      String placeName =
+          await getPlaceName(position.latitude, position.longitude);
 
       User? user = FirebaseAuth.instance.currentUser;
-      if (user != null) {
-        final locationRef = FirebaseFirestore.instance.collection('locations');
-        await locationRef.doc(user.uid).set({
-          'latitude': position.latitude,
-          'longitude': position.longitude,
-          'placeName': placeName,
-          'timestamp': Timestamp.now(),
-        });
-        print("Location saved to Firebase");
 
-        // Show a success SnackBar
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("Location saved successfully!"),
-            backgroundColor: Colors.green,
-          ),
-        );
-
-        // Navigate to Home Page and prevent going back
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => HomePage()),
-        );
-      } else {
-        print("User is not authenticated");
+      if (user == null) {
+        throw Exception("User is not logged in");
       }
-    } catch (e) {
-      print("Failed to save location: $e");
 
-      // Show an error SnackBar
+      // Save to Firestore
+      await FirebaseFirestore.instance
+          .collection('locations')
+          .doc(user.uid)
+          .set({
+        'latitude': position.latitude,
+        'longitude': position.longitude,
+        'placeName': placeName,
+        'timestamp': Timestamp.now(),
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Location saved successfully!"),
+          backgroundColor: Colors.green,
+        ),
+      );
+
+      // Go to Home Page
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => HomePage()),
+      );
+    } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text("Failed to save location: $e"),
@@ -143,10 +128,9 @@ class _LocationPageState extends State<LocationPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.greenAccent,
+        backgroundColor: const Color.fromARGB(255, 255, 255, 255),
         centerTitle: true,
-        // Display the app logo instead of the text title
-        title: Image.asset('assets/pestincoco.png', height: 60),
+        title: Image.asset('assets/u.png', height: 50),
       ),
       body: Stack(
         children: [
@@ -161,6 +145,25 @@ class _LocationPageState extends State<LocationPage> {
             myLocationEnabled: true,
             myLocationButtonEnabled: true,
           ),
+
+          // Positioned(
+          //   top: 20,
+          //   right: 20,
+          //   child: FloatingActionButton(
+          //     heroTag: "save_fab",
+          //     backgroundColor: Colors.white,
+          //     elevation: 4,
+          //     mini: true,
+          //     child: const Icon(
+          //       Icons.my_location,
+          //       color: Colors.green,
+          //       size: 34,
+          //     ),
+          //     onPressed: () async => await saveLocationToFirebase(context),
+          //   ),
+          // ),
+
+          // BOTTOM BUTTON (existing)
           Positioned(
             bottom: 30,
             left: 55,
@@ -173,17 +176,15 @@ class _LocationPageState extends State<LocationPage> {
                   borderRadius: BorderRadius.circular(12),
                   side: BorderSide(color: Colors.green, width: 2),
                 ),
-                padding: const EdgeInsets.symmetric(vertical: 10),
+                padding: EdgeInsets.symmetric(vertical: 10),
               ),
-              onPressed: () async {
-                await saveLocationToFirebase(context);
-              },
-              child: const Text(
+              onPressed: () async => await saveLocationToFirebase(context),
+              child: Text(
                 "Save Current Location",
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
             ),
-          ),
+          )
         ],
       ),
     );

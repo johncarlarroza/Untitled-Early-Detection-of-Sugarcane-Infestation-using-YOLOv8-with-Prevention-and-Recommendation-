@@ -175,6 +175,26 @@ class _CameraPageState extends State<OffCamera> {
     _cameraController!.setFlashMode(_flashMode);
   }
 
+  void _showHelpDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Help"),
+          content: Image.asset('assets/tips.png'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text("Close"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   void _reset() {
     setState(() {
       _isImageClassified = false;
@@ -195,7 +215,7 @@ class _CameraPageState extends State<OffCamera> {
   @override
   Widget build(BuildContext context) {
     double focusWidth = 250;
-    double focusHeight = 400;
+    double focusHeight = 370;
 
     return Scaffold(
       body: Stack(
@@ -204,18 +224,16 @@ class _CameraPageState extends State<OffCamera> {
               ? SizedBox.expand(child: CameraPreview(_cameraController!))
               : const Center(child: CircularProgressIndicator()),
 
-          /// Focus box
           Center(
             child: Container(
               width: focusWidth,
               height: focusHeight,
               decoration: BoxDecoration(
-                border: Border.all(color: Colors.greenAccent, width: 2),
+                border: Border.all(color: Colors.greenAccent, width: 1),
               ),
             ),
           ),
 
-          /// Flash + Switch camera
           Positioned(
             top: 40,
             left: 16,
@@ -256,6 +274,21 @@ class _CameraPageState extends State<OffCamera> {
                   onPressed: _captureImage,
                   backgroundColor: Colors.green,
                   child: const Icon(Icons.camera, color: Colors.white),
+                ),
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    FloatingActionButton(
+                      onPressed: _showHelpDialog,
+                      tooltip: 'Help',
+                      backgroundColor: Colors.white,
+                      child:
+                          const Icon(Icons.help_outline, color: Colors.black),
+                    ),
+                    const SizedBox(height: 8),
+                    const Text("Snap Tips",
+                        style: TextStyle(color: Colors.white70)),
+                  ],
                 ),
               ],
             ),

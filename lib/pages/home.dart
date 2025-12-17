@@ -185,7 +185,7 @@ class HomeContent extends StatelessWidget {
         context,
         MaterialPageRoute(builder: (context) => VariantListPage()),
       );
-    } else if (name == 'Sugarcane Pest Control Measures') {
+    } else if (name == 'Sugarcane Pests Control Measures') {
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => Cocomitig()),

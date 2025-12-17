@@ -1,5 +1,6 @@
 import 'package:early_application_1/admin/admin_signin.dart';
 import 'package:early_application_1/features/user_auth/presentation/pages/sign_up_page.dart';
+import 'package:early_application_1/location/geolocation.dart';
 import 'package:early_application_1/offline/home.dart';
 import 'package:early_application_1/pages/home.dart';
 import 'package:early_application_1/pages/signup_screen.dart';
@@ -26,11 +27,11 @@ class _SignInScreenState extends State<SignInScreen> {
 
   void _signIn() async {
     try {
-      UserCredential userCredential = await FirebaseAuth.instance
-          .signInWithEmailAndPassword(
-            email: _emailTextController.text.trim(),
-            password: _passwordTextController.text.trim(),
-          );
+      UserCredential userCredential =
+          await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: _emailTextController.text.trim(),
+        password: _passwordTextController.text.trim(),
+      );
 
       if (userCredential.user != null) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -38,7 +39,7 @@ class _SignInScreenState extends State<SignInScreen> {
         );
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => HomePage()),
+          MaterialPageRoute(builder: (context) => LocationPage()),
         );
       }
     } catch (e) {

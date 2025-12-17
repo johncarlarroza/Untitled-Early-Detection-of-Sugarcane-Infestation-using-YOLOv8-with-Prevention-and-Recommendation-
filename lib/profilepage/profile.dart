@@ -1,4 +1,5 @@
 import 'package:early_application_1/location/geolocation.dart';
+import 'package:early_application_1/pages/signin_screen.dart';
 import 'package:early_application_1/profilepage/gallery.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -48,8 +49,8 @@ class _ProfilePageState extends State<ProfilePage> {
         setState(() {
           _username = userDoc['username']; // Get username from Firestore
           _userType = userDoc['userType']; // Get user type from Firestore
-          _profilePictureUrl =
-              userDoc['profilePictureUrl']; // Get profile picture URL from Firestore
+          _profilePictureUrl = userDoc[
+              'profilePictureUrl']; // Get profile picture URL from Firestore
         });
       } else {
         setState(() {
@@ -109,7 +110,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         backgroundImage: _profilePictureUrl != null
                             ? NetworkImage(_profilePictureUrl!)
                             : AssetImage('assets/profilepic.png')
-                                  as ImageProvider,
+                                as ImageProvider,
                         backgroundColor: Colors.grey[200],
                       ),
                     ),
@@ -321,18 +322,21 @@ class _ProfilePageState extends State<ProfilePage> {
   // Logout function
   Future<void> _logout(BuildContext context) async {
     try {
-      await FirebaseAuth.instance.signOut(); // Log out from Firebase
-      ScaffoldMessenger.of(
+      await FirebaseAuth.instance.signOut();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Logged out successfully')),
+      );
+
+      Navigator.pushAndRemoveUntil(
         context,
-      ).showSnackBar(const SnackBar(content: Text('Log out successfully')));
-      Navigator.popUntil(
-        context,
-        (route) => route.isFirst,
-      ); // Go back to the sign-in screen
+        MaterialPageRoute(
+            builder: (context) => SignInScreen()), // your sign-in page
+        (route) => false,
+      );
     } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Error logging out: $e')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error logging out: $e')),
+      );
     }
   }
 }
