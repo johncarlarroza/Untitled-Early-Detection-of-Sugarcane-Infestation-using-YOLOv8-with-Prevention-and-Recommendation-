@@ -27,7 +27,7 @@ class _ChatbotPageState extends State<ChatbotPage>
     _messages.add({
       'sender': 'bot',
       'message':
-          'Hello! 🌱 I’m your sugarcane agricultural expert. Ask me anything about sugarcane varieties, pests, diseases, or farming practices.'
+          'Hello! 🌱 I’m SugaBot, your sugarcane agriculture assistant. Ask me about pests, diseases, or best farming practices.'
     });
 
     _typingController = AnimationController(
@@ -62,7 +62,7 @@ class _ChatbotPageState extends State<ChatbotPage>
         _isLoading = false;
         _messages.add({
           'sender': 'bot',
-          'message': 'Sorry, I had trouble responding. Please try again.'
+          'message': 'Something went wrong. Please try again 🌾'
         });
       });
     }
@@ -78,90 +78,97 @@ class _ChatbotPageState extends State<ChatbotPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF1F8E9),
+      backgroundColor: Colors.transparent,
       appBar: AppBar(
         elevation: 0,
+        automaticallyImplyLeading: false, // ❌ removed back button
         title: const Text(
           'SugaBot',
-          style: TextStyle(fontWeight: FontWeight.w600),
-        ),
-        backgroundColor: Colors.green[700],
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.pop(context),
-        ),
-      ),
-      body: Column(
-        children: [
-          Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.symmetric(vertical: 10),
-              itemCount: _messages.length + (_isLoading ? 1 : 0),
-              itemBuilder: (context, index) {
-                if (_isLoading && index == _messages.length) {
-                  return _TypingIndicator(animation: _dotAnimation);
-                }
-
-                final message = _messages[index];
-                final isUser = message['sender'] == 'user';
-
-                return _ChatBubble(
-                  message: message['message']!,
-                  isUser: isUser,
-                );
-              },
-            ),
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            letterSpacing: 0.5,
           ),
-          _buildInputBar(),
-        ],
+        ),
+        centerTitle: true,
+        backgroundColor: Colors.green[700],
+      ),
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              Color(0xFFF1F8E9),
+              Color(0xFFE8F5E9),
+            ],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
+        child: Column(
+          children: [
+            Expanded(
+              child: ListView.builder(
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                itemCount: _messages.length + (_isLoading ? 1 : 0),
+                itemBuilder: (context, index) {
+                  if (_isLoading && index == _messages.length) {
+                    return _TypingIndicator(animation: _dotAnimation);
+                  }
+
+                  final message = _messages[index];
+                  final isUser = message['sender'] == 'user';
+
+                  return _ChatBubble(
+                    message: message['message']!,
+                    isUser: isUser,
+                  );
+                },
+              ),
+            ),
+            _buildInputBar(),
+          ],
+        ),
       ),
     );
   }
 
   Widget _buildInputBar() {
-    return Container(
-      padding: const EdgeInsets.fromLTRB(12, 8, 12, 12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.08),
-            blurRadius: 10,
-            offset: const Offset(0, -2),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: TextField(
-              controller: _messageController,
-              decoration: InputDecoration(
-                hintText: 'Ask about sugarcane...',
-                filled: true,
-                fillColor: Colors.grey[100],
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(30),
-                  borderSide: BorderSide.none,
+    return SafeArea(
+      child: Container(
+        margin: const EdgeInsets.fromLTRB(12, 6, 12, 12),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(30),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 12,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: TextField(
+                controller: _messageController,
+                decoration: const InputDecoration(
+                  hintText: 'Ask about sugarcane… 🌾',
+                  border: InputBorder.none,
                 ),
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 18,
-                  vertical: 12,
-                ),
+                onSubmitted: (_) => _sendMessage(),
               ),
-              onSubmitted: (_) => _sendMessage(),
             ),
-          ),
-          const SizedBox(width: 10),
-          CircleAvatar(
-            radius: 24,
-            backgroundColor: Colors.green[700],
-            child: IconButton(
-              icon: const Icon(Icons.send, color: Colors.white),
-              onPressed: _sendMessage,
+            CircleAvatar(
+              radius: 22,
+              backgroundColor: Colors.green[700],
+              child: IconButton(
+                icon: const Icon(Icons.send, color: Colors.white, size: 18),
+                onPressed: _sendMessage,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -179,11 +186,11 @@ class _ChatBubble extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
       child: Row(
         mainAxisAlignment:
             isUser ? MainAxisAlignment.end : MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           if (!isUser)
             const CircleAvatar(
@@ -194,23 +201,15 @@ class _ChatBubble extends StatelessWidget {
           if (!isUser) const SizedBox(width: 8),
           Flexible(
             child: Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 14,
-                vertical: 12,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
               decoration: BoxDecoration(
                 color: isUser ? Colors.green[600] : Colors.white,
-                borderRadius: BorderRadius.only(
-                  topLeft: const Radius.circular(16),
-                  topRight: const Radius.circular(16),
-                  bottomLeft: isUser ? const Radius.circular(16) : Radius.zero,
-                  bottomRight: isUser ? Radius.zero : const Radius.circular(16),
-                ),
+                borderRadius: BorderRadius.circular(18),
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withOpacity(0.05),
                     blurRadius: 6,
-                    offset: const Offset(0, 3),
+                    offset: const Offset(0, 2),
                   ),
                 ],
               ),
@@ -224,13 +223,6 @@ class _ChatBubble extends StatelessWidget {
               ),
             ),
           ),
-          if (isUser) const SizedBox(width: 8),
-          if (isUser)
-            const CircleAvatar(
-              radius: 18,
-              backgroundColor: Colors.blueGrey,
-              child: Icon(Icons.person, color: Colors.white, size: 18),
-            ),
         ],
       ),
     );
@@ -245,7 +237,7 @@ class _TypingIndicator extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
       child: Row(
         children: [
           const CircleAvatar(
@@ -258,11 +250,11 @@ class _TypingIndicator extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(18),
             ),
             child: AnimatedBuilder(
               animation: animation,
-              builder: (context, child) {
+              builder: (context, _) {
                 return Text(
                   'Typing${'.' * animation.value}',
                   style: const TextStyle(
