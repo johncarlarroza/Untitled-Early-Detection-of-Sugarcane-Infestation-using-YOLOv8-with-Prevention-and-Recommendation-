@@ -14,99 +14,93 @@ class ReportsPage extends StatefulWidget {
 }
 
 class _ReportsPageState extends State<ReportsPage> {
-  int totalUsers = 0;
-  int totalPests = 0;
   bool loading = true;
 
+  int totalUsers = 0;
+  int totalPests = 0;
+
   Map<String, int> pestsPerDay = {};
-  Map<String, Set<String>> activeUsersPerDay = {};
+  Map<String, int> usersPerDay = {};
+  Map<String, int> activeUsersPerDay = {};
 
   @override
   void initState() {
     super.initState();
-    _fetchStats();
+    _loadReports();
   }
 
-  Future<void> _fetchStats() async {
+  Future<void> _loadReports() async {
     try {
-      final usersSnap =
+      final usersSnapshot =
           await FirebaseFirestore.instance.collection('users').get();
-      final pestsSnap = await FirebaseFirestore.instance.collection('pc').get();
+      final pestsSnapshot =
+          await FirebaseFirestore.instance.collection('pc').get();
 
-      pestsPerDay.clear();
-      activeUsersPerDay.clear();
+      totalUsers = usersSnapshot.docs.length;
+      totalPests = pestsSnapshot.docs.length;
 
-      for (var doc in pestsSnap.docs) {
+      /// USERS REGISTERED PER DAY
+      usersPerDay = _groupByDay(usersSnapshot.docs, 'createdAt');
+
+      /// PESTS DETECTED PER DAY
+      pestsPerDay = _groupByDay(pestsSnapshot.docs, 'timestamp');
+
+      /// ACTIVE USERS PER DAY (USING USERNAME)
+      final Map<String, Set<String>> tempActive = {};
+
+      for (var doc in pestsSnapshot.docs) {
         final data = doc.data() as Map<String, dynamic>;
+        if (!data.containsKey('timestamp')) continue;
 
-        if (data['createdAt'] == null) continue;
-        final date = DateFormat('MMM dd')
-            .format((data['createdAt'] as Timestamp).toDate());
+        final day = DateFormat('MMM dd')
+            .format((data['timestamp'] as Timestamp).toDate());
 
-        pestsPerDay[date] = (pestsPerDay[date] ?? 0) + 1;
+        final username = data['username'] ?? 'unknown';
 
-        if (data['userId'] != null) {
-          activeUsersPerDay.putIfAbsent(date, () => <String>{});
-          activeUsersPerDay[date]!.add(data['userId']);
-        }
+        tempActive.putIfAbsent(day, () => <String>{});
+        tempActive[day]!.add(username);
       }
 
+      activeUsersPerDay = {
+        for (var e in tempActive.entries) e.key: e.value.length
+      };
+
       setState(() {
-        totalUsers = usersSnap.docs.length;
-        totalPests = pestsSnap.docs.length;
         loading = false;
       });
     } catch (e) {
-      debugPrint("Stats error: $e");
+      debugPrint('REPORT ERROR: $e');
     }
   }
 
-  /// 📄 PDF EXPORT
-  Future<void> _exportPdf() async {
-    final pdf = pw.Document();
+  /// GROUP DOCUMENTS BY DAY
+  Map<String, int> _groupByDay(
+    List<QueryDocumentSnapshot> docs,
+    String field,
+  ) {
+    final Map<String, int> result = {};
 
-    pdf.addPage(
-      pw.Page(
-        build: (context) {
-          return pw.Column(
-            crossAxisAlignment: pw.CrossAxisAlignment.start,
-            children: [
-              pw.Text(
-                'Admin Analytics Report',
-                style:
-                    pw.TextStyle(fontSize: 20, fontWeight: pw.FontWeight.bold),
-              ),
-              pw.SizedBox(height: 16),
-              pw.Text('Total Users: $totalUsers'),
-              pw.Text('Total Pests Detected: $totalPests'),
-              pw.SizedBox(height: 20),
-              pw.Table.fromTextArray(
-                headers: ['Date', 'Pests Detected', 'Active Users'],
-                data: pestsPerDay.keys.map((date) {
-                  return [
-                    date,
-                    pestsPerDay[date].toString(),
-                    (activeUsersPerDay[date]?.length ?? 0).toString(),
-                  ];
-                }).toList(),
-              ),
-            ],
-          );
-        },
-      ),
-    );
+    for (var doc in docs) {
+      final data = doc.data() as Map<String, dynamic>;
+      if (!data.containsKey(field)) continue;
 
-    await Printing.layoutPdf(onLayout: (format) async => pdf.save());
+      final Timestamp ts = data[field];
+      final String day = DateFormat('MMM dd').format(ts.toDate());
+
+      result[day] = (result[day] ?? 0) + 1;
+    }
+    return result;
   }
 
-  Widget _barChart(Map<String, int> data, Color color) {
+  /// BAR CHART WIDGET
+  Widget _buildBarChart(Map<String, int> data, Color color) {
     if (data.isEmpty) {
-      return const Center(child: Text("No data"));
+      return const Center(child: Text("No data available"));
     }
 
     return BarChart(
       BarChartData(
-        maxY: data.values.reduce((a, b) => a > b ? a : b).toDouble() + 2,
+        maxY: data.values.reduce((a, b) => a > b ? a : b).toDouble() + 1,
         barGroups: List.generate(
           data.length,
           (index) => BarChartGroupData(
@@ -116,22 +110,75 @@ class _ReportsPageState extends State<ReportsPage> {
                 toY: data.values.elementAt(index).toDouble(),
                 width: 18,
                 color: color,
+                borderRadius: BorderRadius.circular(4),
               ),
             ],
           ),
         ),
         titlesData: FlTitlesData(
+          leftTitles: AxisTitles(
+            sideTitles: SideTitles(showTitles: true),
+          ),
           bottomTitles: AxisTitles(
             sideTitles: SideTitles(
               showTitles: true,
-              getTitlesWidget: (v, _) => Text(data.keys.elementAt(v.toInt()),
-                  style: const TextStyle(fontSize: 10)),
+              getTitlesWidget: (value, _) {
+                if (value.toInt() < data.keys.length) {
+                  return Text(
+                    data.keys.elementAt(value.toInt()),
+                    style: const TextStyle(fontSize: 10),
+                  );
+                }
+                return const Text('');
+              },
             ),
           ),
-          leftTitles: AxisTitles(sideTitles: SideTitles(showTitles: true)),
         ),
         borderData: FlBorderData(show: false),
       ),
+    );
+  }
+
+  /// PDF EXPORT
+  Future<void> _exportPdf() async {
+    final pdf = pw.Document();
+
+    pdf.addPage(
+      pw.Page(
+        pageFormat: PdfPageFormat.a4,
+        build: (context) {
+          return pw.Column(
+            crossAxisAlignment: pw.CrossAxisAlignment.start,
+            children: [
+              pw.Text(
+                'Admin Analytics Report',
+                style: pw.TextStyle(
+                  fontSize: 20,
+                  fontWeight: pw.FontWeight.bold,
+                ),
+              ),
+              pw.SizedBox(height: 16),
+              pw.Text('Total Users: $totalUsers'),
+              pw.Text('Total Pest Detections: $totalPests'),
+              pw.SizedBox(height: 20),
+              pw.Table.fromTextArray(
+                headers: const ['Date', 'Pests Detected', 'Active Users'],
+                data: pestsPerDay.keys.map((date) {
+                  return [
+                    date,
+                    pestsPerDay[date].toString(),
+                    activeUsersPerDay[date]?.toString() ?? '0',
+                  ];
+                }).toList(),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+
+    await Printing.layoutPdf(
+      onLayout: (format) async => pdf.save(),
     );
   }
 
@@ -141,18 +188,14 @@ class _ReportsPageState extends State<ReportsPage> {
       return const Center(child: CircularProgressIndicator());
     }
 
-    final activeUsersCountPerDay = {
-      for (var e in activeUsersPerDay.entries) e.key: e.value.length
-    };
-
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Admin Reports"),
+        title: const Text('Admin Reports'),
         actions: [
           IconButton(
             icon: const Icon(Icons.picture_as_pdf),
             onPressed: _exportPdf,
-          )
+          ),
         ],
       ),
       body: SingleChildScrollView(
@@ -160,20 +203,87 @@ class _ReportsPageState extends State<ReportsPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text("Total Users: $totalUsers",
-                style: const TextStyle(fontSize: 16)),
-            Text("Total Pests: $totalPests",
-                style: const TextStyle(fontSize: 16)),
+            /// TOTALS
+            Row(
+              children: [
+                Expanded(
+                  child: Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        children: [
+                          const Text('Total Users'),
+                          const SizedBox(height: 6),
+                          Text(
+                            totalUsers.toString(),
+                            style: const TextStyle(
+                              fontSize: 22,
+                              color: Colors.blue,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        children: [
+                          const Text('Total Pests'),
+                          const SizedBox(height: 6),
+                          Text(
+                            totalPests.toString(),
+                            style: const TextStyle(
+                              fontSize: 22,
+                              color: Colors.red,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+
             const SizedBox(height: 24),
-            const Text("Pests Detected Per Day",
-                style: TextStyle(fontWeight: FontWeight.bold)),
-            SizedBox(height: 220, child: _barChart(pestsPerDay, Colors.red)),
-            const SizedBox(height: 32),
-            const Text("Active Users Per Day",
-                style: TextStyle(fontWeight: FontWeight.bold)),
+
+            /// PESTS PER DAY
+            const Text(
+              'Pests Detected Per Day',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
             SizedBox(
-                height: 220,
-                child: _barChart(activeUsersCountPerDay, Colors.blue)),
+              height: 220,
+              child: _buildBarChart(pestsPerDay, Colors.red),
+            ),
+
+            const SizedBox(height: 32),
+
+            /// USERS PER DAY
+            const Text(
+              'Users Registered Per Day',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            SizedBox(
+              height: 220,
+              child: _buildBarChart(usersPerDay, Colors.blue),
+            ),
+
+            const SizedBox(height: 32),
+
+            /// ACTIVE USERS PER DAY
+            const Text(
+              'Active Users Per Day',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            SizedBox(
+              height: 220,
+              child: _buildBarChart(activeUsersPerDay, Colors.green),
+            ),
           ],
         ),
       ),
