@@ -2,7 +2,6 @@ import 'package:early_application_1/admin/admin_signin.dart';
 import 'package:early_application_1/features/user_auth/presentation/pages/sign_up_page.dart';
 import 'package:early_application_1/location/geolocation.dart';
 import 'package:early_application_1/offline/home.dart';
-import 'package:early_application_1/pages/home.dart';
 import 'package:early_application_1/pages/signup_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -19,11 +18,6 @@ class SignInScreen extends StatefulWidget {
 class _SignInScreenState extends State<SignInScreen> {
   final TextEditingController _passwordTextController = TextEditingController();
   final TextEditingController _emailTextController = TextEditingController();
-
-  @override
-  void initState() {
-    super.initState();
-  }
 
   void _signIn() async {
     try {
@@ -43,9 +37,9 @@ class _SignInScreenState extends State<SignInScreen> {
         );
       }
     } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Login failed: ${e.toString()}')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Login failed: ${e.toString()}')),
+      );
     }
   }
 
@@ -60,9 +54,9 @@ class _SignInScreenState extends State<SignInScreen> {
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  hexStringToColor("F1C40F"),
-                  hexStringToColor("D4AC0D"),
-                  hexStringToColor("27AE60"),
+                  hexStringToColor("A8E063"), // bright leafy green
+                  hexStringToColor("56AB2F"), // jungle green
+                  hexStringToColor("C49A6C"), // warm brown
                 ],
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
@@ -93,11 +87,11 @@ class _SignInScreenState extends State<SignInScreen> {
                       true,
                       _passwordTextController,
                     ),
-                    const SizedBox(height: 1),
+                    const SizedBox(height: 10),
                     firebaseUIButton(context, "Sign In", _signIn),
-                    const SizedBox(height: 1),
+                    const SizedBox(height: 10),
                     SizedBox(
-                      width: 150,
+                      width: 180,
                       height: 70,
                       child: firebaseUIButton(context, "Offline Mode", () {
                         Navigator.push(
@@ -128,8 +122,8 @@ class _SignInScreenState extends State<SignInScreen> {
                 );
               },
               child: Container(
-                width: 40,
-                height: 40,
+                width: 45,
+                height: 45,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   boxShadow: [
@@ -141,7 +135,10 @@ class _SignInScreenState extends State<SignInScreen> {
                   ],
                 ),
                 child: ClipOval(
-                  child: Image.asset("assets/adminlogo.png", fit: BoxFit.cover),
+                  child: Image.asset(
+                    "assets/adminlogo.png",
+                    fit: BoxFit.cover,
+                  ),
                 ),
               ),
             ),

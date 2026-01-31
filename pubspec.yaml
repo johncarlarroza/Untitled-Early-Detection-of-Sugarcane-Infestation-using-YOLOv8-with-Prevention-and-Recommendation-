@@ -83,13 +83,17 @@ flutter:
     - assets/katigan.png
     - assets/catigangreendwarf.aac
     - assets/crb.aac
-    - assets/image1.gif
-    - assets/image2.gif
-    - assets/image3.gif
-    - assets/image4.gif
-    - assets/image5.gif
-    - assets/image6.gif
-    - assets/image7.gif
-    - assets/image8.gif
-    - assets/image9.gif
+    # - assets/image1.gif
+    # - assets/image3.gif
+    # - assets/image4.gif
+    - assets/b6.gif
+    - assets/b10.gif
+    - assets/b9.gif
+    - assets/b7.gif
+    - assets/b8.gif
     - assets/preb.png
+    - assets/b1.gif
+    - assets/b2.gif
+    - assets/b3.gif
+    - assets/b4.gif
+    - assets/b5.gif

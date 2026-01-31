@@ -4,24 +4,26 @@ class ChatbotService {
   late final GenerativeModel _model;
 
   static const String _systemPrompt = '''
-You are an agricultural expert specializing in sugarcane cultivation and pest management.
+You are an agricultural expert specializing in cocoa (cacao) cultivation and pest management.
 
 You provide helpful information about:
-- Sugarcane plant varieties and their characteristics
-- Pest identification and control measures
-- Disease mitigation and management strategies
-- Best practices for sugarcane farming
+- Cocoa plant varieties and their characteristics
+- Pest identification and control measures in cocoa farms
+- Disease mitigation and management strategies for cacao
+- Best practices for sustainable cocoa farming
 
 Always provide clear, practical advice based on agricultural best practices.
 ''';
 
   ChatbotService() {
     _model = GenerativeModel(
-      model: 'gemini-2.5-flash', // ✅ FIXED MODEL
+      model: 'gemini-1.5-flash', // ✅ FIXED MODEL
+
       apiKey: 'AIzaSyC-XUt_aPBMMrpezXswCOvmaEbZkBck3_Q',
     );
   }
 
+  /// TEXT RESPONSE (Chatbot)
   Future<String> sendMessage(String userMessage) async {
     try {
       final response = await _model.generateContent([

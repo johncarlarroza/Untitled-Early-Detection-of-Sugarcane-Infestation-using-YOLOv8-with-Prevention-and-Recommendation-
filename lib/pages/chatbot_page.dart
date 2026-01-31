@@ -27,7 +27,7 @@ class _ChatbotPageState extends State<ChatbotPage>
     _messages.add({
       'sender': 'bot',
       'message':
-          'Hello! 🌱 I’m SugaBot, your sugarcane agriculture assistant. Ask me about pests, diseases, or best farming practices.'
+          'Hello! 🌿 I’m CocoaBot, your cacao farming assistant. Ask me about pests, diseases, or best cocoa farming practices.'
     });
 
     _typingController = AnimationController(
@@ -62,7 +62,7 @@ class _ChatbotPageState extends State<ChatbotPage>
         _isLoading = false;
         _messages.add({
           'sender': 'bot',
-          'message': 'Something went wrong. Please try again 🌾'
+          'message': 'Something went wrong. Please try again 🌱'
         });
       });
     }
@@ -81,23 +81,23 @@ class _ChatbotPageState extends State<ChatbotPage>
       backgroundColor: Colors.transparent,
       appBar: AppBar(
         elevation: 0,
-        automaticallyImplyLeading: false, // ❌ removed back button
+        automaticallyImplyLeading: false,
         title: const Text(
-          'SugaBot',
+          'CocoaBot',
           style: TextStyle(
             fontWeight: FontWeight.bold,
             letterSpacing: 0.5,
           ),
         ),
         centerTitle: true,
-        backgroundColor: Colors.green[700],
+        backgroundColor: const Color.fromARGB(255, 180, 92, 41),
       ),
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
             colors: [
-              Color(0xFFF1F8E9),
-              Color(0xFFE8F5E9),
+              Color(0xFFF1F8E9), // light green
+              Color(0xFFE6D7C3), // light brown
             ],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
@@ -153,7 +153,7 @@ class _ChatbotPageState extends State<ChatbotPage>
               child: TextField(
                 controller: _messageController,
                 decoration: const InputDecoration(
-                  hintText: 'Ask about sugarcane… 🌾',
+                  hintText: 'Ask about cocoa… 🌿',
                   border: InputBorder.none,
                 ),
                 onSubmitted: (_) => _sendMessage(),
@@ -161,7 +161,7 @@ class _ChatbotPageState extends State<ChatbotPage>
             ),
             CircleAvatar(
               radius: 22,
-              backgroundColor: Colors.green[700],
+              backgroundColor: Colors.brown[700],
               child: IconButton(
                 icon: const Icon(Icons.send, color: Colors.white, size: 18),
                 onPressed: _sendMessage,
@@ -193,17 +193,17 @@ class _ChatBubble extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           if (!isUser)
-            const CircleAvatar(
+            CircleAvatar(
               radius: 18,
-              backgroundColor: Colors.green,
-              child: Icon(Icons.grass, color: Colors.white, size: 18),
+              backgroundColor: Colors.brown[600],
+              child: const Icon(Icons.eco, color: Colors.white, size: 18),
             ),
           if (!isUser) const SizedBox(width: 8),
           Flexible(
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
               decoration: BoxDecoration(
-                color: isUser ? Colors.green[600] : Colors.white,
+                color: isUser ? Colors.green[700] : Colors.white,
                 borderRadius: BorderRadius.circular(18),
                 boxShadow: [
                   BoxShadow(
@@ -240,10 +240,10 @@ class _TypingIndicator extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
       child: Row(
         children: [
-          const CircleAvatar(
+          CircleAvatar(
             radius: 18,
-            backgroundColor: Colors.green,
-            child: Icon(Icons.agriculture, color: Colors.white, size: 18),
+            backgroundColor: Colors.brown[600],
+            child: const Icon(Icons.eco, color: Colors.white, size: 18),
           ),
           const SizedBox(width: 8),
           Container(

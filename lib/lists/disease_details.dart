@@ -12,7 +12,7 @@ class DiseaseListPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Sugarcane diseases')),
+      appBar: AppBar(title: Text('Cocoa diseases')),
       body: ListView.builder(
         itemCount: diseasesExamples.length,
         itemBuilder: (context, index) {

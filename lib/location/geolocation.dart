@@ -1,5 +1,4 @@
-import 'package:early_application_1/features/user_auth/presentation/pages/home_page.dart'
-    hide HomePage;
+import 'package:early_application_1/offline/home.dart';
 import 'package:early_application_1/pages/home.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
