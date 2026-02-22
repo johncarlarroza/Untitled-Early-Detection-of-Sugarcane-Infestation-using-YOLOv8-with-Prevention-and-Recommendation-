@@ -1,4 +1,4 @@
-0 Coconut Scale Insect
-1 Coconut Rhinoceros Beetle
-2 Coconut Leaf Beetle
+0 Cocoa Mealy Bugs
+1 Cocoa Mirid Bug
+2 Cocoa Pod Borrer
 3 Unclassified

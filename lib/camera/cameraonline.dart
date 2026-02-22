@@ -17,22 +17,74 @@ class CameraPage extends StatefulWidget {
 class _CameraPageState extends State<CameraPage> {
   CameraController? _cameraController;
   File? _image;
-  String? _label;
+
+  String?
+      _label; // will store RAW label from model (or normalized display label)
   double? _confidence;
+
+  // You were using only one description string in Firestore
   String? _description;
+
   bool _isCameraInitialized = false;
   bool _isImageClassified = false;
+
   int _selectedCameraIndex = 0;
   List<CameraDescription>? _cameras;
+
   FlashMode _flashMode = FlashMode.off;
   bool _isImagePickerActive = false;
+
+  // if you want to store multiple saved URLs (you had this)
   List<String> imageUrls = [];
-  final double focusBoxWidth = 250.0; // Width of the focus box
-  final double focusBoxHeight = 250.0; // Height of the focus box
-  double focusBoxTop =
-      1500.0; // Vertical position of the box (adjust as needed)
-  double focusBoxLeft =
-      150.0; // Horizontal position of the box (adjust as needed)
+
+  // Focus box settings (you can keep these)
+  final double focusBoxWidth = 250.0;
+  final double focusBoxHeight = 250.0;
+
+  // optional: confidence threshold
+  static const double _minConfidenceToAccept = 45.0; // 45%
+
+  // ✅ Your long descriptions (same as you wrote)
+  static const Map<String, Map<String, String>> _pestInfo = {
+    "Cocoa Pod Borrer": {
+      "title": "Cocoa Pod Borer",
+      "desc":
+          "A tiny moth pest whose baby stage (larva) drills into cacao pods.",
+      "details":
+          "This is one of the most harmful pests for cacao farmers, especially in tropical regions. It damages the beans inside and lowers harvest quality.",
+      "biology":
+          "The adult moth lays eggs on the pod surface. When the eggs hatch, the larvae bore inside and feed on the beans.",
+      "control":
+          "Harvest pods regularly, remove infested pods, use pheromone traps, and encourage natural enemies like parasitoid wasps.",
+    },
+    "Cocoa Mirid Bug": {
+      "title": "Cocoa Mirid Bug",
+      "desc": "A small insect that sucks sap from cacao stems and pods.",
+      "details":
+          "Their feeding creates wounds that can turn into dark lesions and may cause branches to dry up.",
+      "biology":
+          "They usually feed at night and inject toxins while sucking plant sap.",
+      "control":
+          "Trim damaged parts, keep the plantation clean, and use recommended insecticides when needed.",
+    },
+    "Cocoa Mealy Bugs": {
+      "title": "Cocoa Mealy Bugs",
+      "desc": "Tiny white insects that look like they’re covered in cotton.",
+      "details":
+          "They weaken plants by sucking sap and can also spread diseases. Ants often protect them.",
+      "biology":
+          "They gather in groups on stems, leaves, and pods and multiply quickly.",
+      "control":
+          "Control ants, wash them off with water, or use natural sprays like neem oil.",
+    },
+    "Unclassified": {
+      "title": "Unclassified",
+      "desc": "There is no pest in the picture captured.",
+      "details": "",
+      "biology": "",
+      "control": "",
+    }
+  };
 
   Future<void> _tfLiteInit() async {
     await Tflite.loadModel(
@@ -44,12 +96,52 @@ class _CameraPageState extends State<CameraPage> {
     );
   }
 
+  // Normalize raw label from TFLite to your canonical keys:
+  // Cocoa Mealy Bugs / Cocoa Mirid Bug / Cocoa Pod Borrer / Unclassified
+  String _normalizeLabel(String raw) {
+    final cleaned = raw.toLowerCase().trim();
+
+    // Prefer index-based match because your labels include numbers
+    if (cleaned.startsWith('0')) return 'Cocoa Mealy Bugs';
+    if (cleaned.startsWith('1')) return 'Cocoa Mirid Bug';
+    if (cleaned.startsWith('2')) return 'Cocoa Pod Borrer';
+    if (cleaned.startsWith('3')) return 'Unclassified';
+
+    // fallback keyword match
+    if (cleaned.contains('mealy')) return 'Cocoa Mealy Bugs';
+    if (cleaned.contains('mirid')) return 'Cocoa Mirid Bug';
+    if (cleaned.contains('borrer') || cleaned.contains('borer')) {
+      return 'Cocoa Pod Borrer';
+    }
+    if (cleaned.contains('unclassified') || cleaned.contains('unknown')) {
+      return 'Unclassified';
+    }
+
+    return 'Unclassified';
+  }
+
+  // Your old method name kept, but corrected for Cocoa labels
+  String _getPestDescription(String? rawLabel) {
+    final normalized = _normalizeLabel(rawLabel ?? '');
+    final info = _pestInfo[normalized] ?? _pestInfo["Unclassified"]!;
+
+    // This string is what will be saved to Firestore as "description"
+    if (normalized == "Unclassified") {
+      return info["desc"] ?? "There is no pest in the picture captured.";
+    }
+
+    return "Description: ${info["desc"]}\n\n"
+        "Detailed Information: ${info["details"]}\n\n"
+        "Biology and Behavior: ${info["biology"]}\n\n"
+        "Control Measures: ${info["control"]}";
+  }
+
   Future<void> _classifyImage(File image) async {
-    var recognitions = await Tflite.runModelOnImage(
+    final recognitions = await Tflite.runModelOnImage(
       path: image.path,
       imageMean: 0.0,
       imageStd: 255.0,
-      numResults: 2,
+      numResults: 3,
       threshold: 0.2,
       asynch: true,
     );
@@ -60,39 +152,39 @@ class _CameraPageState extends State<CameraPage> {
       setState(() {
         _label = "Unclassified";
         _confidence = null;
-        _description = null;
+        _description = _getPestDescription("Unclassified");
+        _isImageClassified = true;
       });
       return;
     }
 
-    String detectedLabel = recognitions[0]['label'].toString();
-    _description = _getPestDescription(detectedLabel);
+    final rawLabel = (recognitions[0]['label'] ?? '').toString();
+    final conf01 = (recognitions[0]['confidence'] ?? 0.0) as double;
+    final conf = conf01 * 100;
+
+    final normalized = _normalizeLabel(rawLabel);
+
+    // If low confidence OR model outputs Unclassified -> Unclassified
+    final finalLabel =
+        (normalized == "Unclassified" || conf < _minConfidenceToAccept)
+            ? "Unclassified"
+            : normalized;
 
     setState(() {
-      _label = detectedLabel;
-      _confidence = recognitions[0]['confidence'] * 100;
+      _label = finalLabel; // store normalized for UI
+      _confidence = conf;
+      _description = _getPestDescription(finalLabel);
       _isImageClassified = true;
     });
   }
 
-  // Function to get pest description based on the detected label
-  String? _getPestDescription(String? label) {
-    switch (label) {
-      case "0 Coconut Rhinoceros Beetle":
-        return "The Coconut Rhinoceros Beetle is a destructive pest known for its distinctive horn.";
-      case "1 Coconut Leaf Beetle":
-        return "The coconut leaf beetle is one of the most damaging pests of coconut and other palms. The larvae and adults of the beetle feed on the soft tissues of the youngest leaf in the throat of the palm.";
-      case "2 Coconut Scale Insect":
-        return "The Coconut Scale Insect is a sap-sucking pest that infests coconut palms.";
-      case "3 Unclassified":
-        return "Unable to classify this pest. Please try another image.";
-      default:
-        return "";
-    }
-  }
-
   Future<void> _initializeCamera() async {
     _cameras = await availableCameras();
+    if (_cameras == null || _cameras!.isEmpty) return;
+
+    // dispose old controller before re-init (important when switching camera)
+    await _cameraController?.dispose();
+
     _cameraController = CameraController(
       _cameras![_selectedCameraIndex],
       ResolutionPreset.high,
@@ -104,17 +196,17 @@ class _CameraPageState extends State<CameraPage> {
       if (!mounted) return;
 
       await _cameraController?.setFlashMode(_flashMode);
-      setState(() {
-        _isCameraInitialized = true;
-      });
+      setState(() => _isCameraInitialized = true);
     } catch (e) {
-      print('Error initializing camera: $e');
+      debugPrint('Error initializing camera: $e');
     }
   }
 
   Future<void> _captureImage() async {
-    if (_cameraController == null || !_cameraController!.value.isInitialized)
+    if (_cameraController == null || !_cameraController!.value.isInitialized) {
       return;
+    }
+
     try {
       final XFile file = await _cameraController!.takePicture();
       if (!mounted) return;
@@ -126,26 +218,25 @@ class _CameraPageState extends State<CameraPage> {
         _description = null;
         _isImageClassified = false;
       });
+
       await _classifyImage(_image!);
     } catch (e) {
-      print(e);
+      debugPrint("Capture error: $e");
     }
   }
 
   Future<void> _getImageFromGallery() async {
-    if (_isImagePickerActive) return; // Check if picker is already active
-    setState(() {
-      _isImagePickerActive = true; // Set flag to true
-    });
+    if (_isImagePickerActive) return;
+
+    setState(() => _isImagePickerActive = true);
 
     final picker = ImagePicker();
     final XFile? image = await picker.pickImage(source: ImageSource.gallery);
 
-    setState(() {
-      _isImagePickerActive = false; // Reset flag after picking
-    });
+    if (!mounted) return;
+    setState(() => _isImagePickerActive = false);
 
-    if (image == null || !mounted) return;
+    if (image == null) return;
 
     setState(() {
       _image = File(image.path);
@@ -159,15 +250,18 @@ class _CameraPageState extends State<CameraPage> {
   }
 
   Future<void> _switchCamera() async {
+    if (_cameras == null || _cameras!.length < 2) return;
     _selectedCameraIndex = _selectedCameraIndex == 0 ? 1 : 0;
+    setState(() => _isCameraInitialized = false);
     await _initializeCamera();
   }
 
   void _toggleFlash() {
+    if (_cameraController == null) return;
+
     setState(() {
-      _flashMode = _flashMode == FlashMode.off
-          ? FlashMode.torch
-          : FlashMode.off;
+      _flashMode =
+          _flashMode == FlashMode.off ? FlashMode.torch : FlashMode.off;
     });
     _cameraController?.setFlashMode(_flashMode);
   }
@@ -182,107 +276,107 @@ class _CameraPageState extends State<CameraPage> {
     });
   }
 
-  void _viewFullDetails() {
-    print("View Full Details clicked");
-  }
-
-  // Save data to Firestore
+  // ----------------- FIRESTORE SAVE -----------------
 
   Future<void> _saveData() async {
     if (_image == null) return;
 
     try {
-      // Upload the image to Firebase Storage and get the download URL
-      String? imageUrl = await _uploadImageToFirebase(_image!);
+      final imageUrl = await _uploadImageToFirebase(_image!);
 
-      if (imageUrl != null) {
-        // Get the current user ID and email from FirebaseAuth
-        String? userId = FirebaseAuth.instance.currentUser?.uid;
-        String? email = FirebaseAuth.instance.currentUser?.email;
-        if (userId == null || email == null) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("User is not logged in")),
-          );
-          return;
-        }
-
-        // Fetch the user's location (placeName) from Firestore
-        DocumentSnapshot locationSnapshot = await FirebaseFirestore.instance
-            .collection('locations')
-            .doc(userId)
-            .get();
-        String placeName = locationSnapshot.exists
-            ? locationSnapshot['placeName'] ?? "Unknown Location"
-            : "Unknown Location";
-
-        // Fetch user data from the 'users' collection (userType and username)
-        DocumentSnapshot userSnapshot = await FirebaseFirestore.instance
-            .collection('users')
-            .doc(userId)
-            .get();
-        String userType = userSnapshot.exists
-            ? userSnapshot['userType'] ?? "Unknown"
-            : "Unknown";
-        String username = userSnapshot.exists
-            ? userSnapshot['username'] ?? "Anonymous"
-            : "Anonymous";
-
-        // Save data to Firestore
-        await FirebaseFirestore.instance.collection("pc").doc(userId).set({
-          'imageUrl': imageUrl, // Store the image URL
-          'label': _label ?? "Unclassified", // Store the label
-          'confidence': _confidence ?? 0.0, // Store the confidence value
-          'description': _description ?? "No description", // Store description
-          'timestamp': FieldValue.serverTimestamp(), // Store timestamp
-          'placeName': placeName, // Store location name
-          'email': email, // Store email
-          'userType': userType, // Store user type
-          'username': username, // Store username
-        }, SetOptions(merge: true));
-
+      if (imageUrl == null) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Data saved successfully.")),
+          const SnackBar(content: Text("Failed to upload image.")),
         );
+        return;
       }
+
+      final userId = FirebaseAuth.instance.currentUser?.uid;
+      final email = FirebaseAuth.instance.currentUser?.email;
+
+      if (userId == null || email == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("User is not logged in")),
+        );
+        return;
+      }
+
+      // location (optional)
+      final locationSnapshot = await FirebaseFirestore.instance
+          .collection('locations')
+          .doc(userId)
+          .get();
+
+      final placeName = locationSnapshot.exists
+          ? (locationSnapshot.data()?['placeName'] ?? "Unknown Location")
+          : "Unknown Location";
+
+      // user profile (optional)
+      final userSnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .get();
+
+      final userType = userSnapshot.exists
+          ? (userSnapshot.data()?['userType'] ?? "Unknown")
+          : "Unknown";
+
+      final username = userSnapshot.exists
+          ? (userSnapshot.data()?['username'] ?? "Anonymous")
+          : "Anonymous";
+
+      // NOTE: you were using .doc(userId).set => overwrites the same doc per user
+      // If you want multiple records, use .add({...}) instead.
+      await FirebaseFirestore.instance.collection("pc").add({
+        'userId': userId,
+        'imageUrl': imageUrl,
+        'label': _label ?? "Unclassified",
+        'confidence': _confidence ?? 0.0,
+        'description': _description ?? "No description",
+        'timestamp': FieldValue.serverTimestamp(),
+        'placeName': placeName,
+        'email': email,
+        'userType': userType,
+        'username': username,
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Data saved successfully.")),
+      );
     } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text("Error saving data: $e")));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text("Error saving data: $e")));
     }
   }
 
   Future<void> _classifyAndSaveImage(File image) async {
-    // Upload the image to the "Saved Image" folder and get the download URL
-    String? downloadUrl = await _uploadImageToFirebase(image);
-
+    final downloadUrl = await _uploadImageToFirebase(image);
     if (downloadUrl != null) {
-      // Append the new download URL to the class-level imageUrls list
       imageUrls.add(downloadUrl);
-      await _saveData(); // Save the data to Firestore
+      await _saveData();
     }
   }
 
   Future<String?> _uploadImageToFirebase(File image) async {
     int attempts = 0;
     const maxAttempts = 5;
+
     while (attempts < maxAttempts) {
       try {
-        String fileName = DateTime.now().millisecondsSinceEpoch.toString();
-        Reference storageRef = FirebaseStorage.instance.ref().child(
-          "pest_images/$fileName",
-        );
-        UploadTask uploadTask = storageRef.putFile(image);
+        final fileName = DateTime.now().millisecondsSinceEpoch.toString();
+        final storageRef =
+            FirebaseStorage.instance.ref().child("pest_images/$fileName");
 
-        TaskSnapshot snapshot = await uploadTask.whenComplete(() {});
-        String downloadUrl = await snapshot.ref.getDownloadURL();
+        final uploadTask = storageRef.putFile(image);
+        final snapshot = await uploadTask.whenComplete(() {});
+        final downloadUrl = await snapshot.ref.getDownloadURL();
         return downloadUrl;
       } catch (e) {
-        print("Error uploading image: $e");
+        debugPrint("Error uploading image: $e");
         attempts++;
+
         if (attempts < maxAttempts) {
-          await Future.delayed(
-            Duration(seconds: 2 << attempts),
-          ); // Exponential backoff
+          await Future.delayed(Duration(seconds: 2 << attempts));
         }
       }
     }
@@ -292,20 +386,16 @@ class _CameraPageState extends State<CameraPage> {
   void _showHelpDialog() {
     showDialog(
       context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text("Help"),
-          content: Image.asset('assets/tips.png'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text("Close"),
-            ),
-          ],
-        );
-      },
+      builder: (_) => AlertDialog(
+        title: const Text("Help"),
+        content: Image.asset('assets/tips.png'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("Close"),
+          ),
+        ],
+      ),
     );
   }
 
@@ -325,22 +415,25 @@ class _CameraPageState extends State<CameraPage> {
 
   @override
   Widget build(BuildContext context) {
-    double screenWidth = MediaQuery.of(context).size.width;
-    double screenHeight = MediaQuery.of(context).size.height;
-    double focusBoxWidth = 250.0; // Set a larger width
-    double focusBoxHeight = 400.0; // Set a larger height
-    // Calculate the position of the focus box (center it)
-    double focusBoxTop = (screenHeight - focusBoxHeight) / 4;
-    double focusBoxLeft = (screenWidth - focusBoxWidth) / 2;
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
+    // You were re-declaring these; keep but use local values
+    const focusBoxWidth = 250.0;
+    const focusBoxHeight = 400.0;
+
+    final focusBoxTop = (screenHeight - focusBoxHeight) / 4;
+    final focusBoxLeft = (screenWidth - focusBoxWidth) / 2;
 
     return Scaffold(
       body: Stack(
         children: [
-          if (_isCameraInitialized)
+          if (_isCameraInitialized && _cameraController != null)
             SizedBox.expand(child: CameraPreview(_cameraController!))
           else
             const Center(child: CircularProgressIndicator()),
-          // Focus Box (Rectangular area)
+
+          // Focus box
           Positioned(
             top: focusBoxTop,
             left: focusBoxLeft,
@@ -353,7 +446,8 @@ class _CameraPageState extends State<CameraPage> {
               ),
             ),
           ),
-          // Top left icons: Flash and Switch Camera
+
+          // Top left buttons
           Positioned(
             top: 40,
             left: 16,
@@ -377,7 +471,7 @@ class _CameraPageState extends State<CameraPage> {
             ),
           ),
 
-          // Bottom controls: Photo, Capture, and Help
+          // Bottom controls
           Positioned(
             bottom: 40,
             left: 0,
@@ -395,20 +489,18 @@ class _CameraPageState extends State<CameraPage> {
                       child: const Icon(Icons.photo, color: Colors.black),
                     ),
                     const SizedBox(height: 8),
-                    const Text(
-                      "Photos",
-                      style: TextStyle(color: Colors.white70),
-                    ),
+                    const Text("Photos",
+                        style: TextStyle(color: Colors.white70)),
                   ],
                 ),
 
-                // Capture button
+                // Capture button (kept your design)
                 Container(
                   width: 80,
                   height: 80,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    gradient: LinearGradient(
+                    gradient: const LinearGradient(
                       colors: [Colors.green, Colors.lightBlueAccent],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
@@ -426,11 +518,8 @@ class _CameraPageState extends State<CameraPage> {
                     tooltip: 'Capture Image',
                     backgroundColor: Colors.transparent,
                     elevation: 0,
-                    child: const Icon(
-                      Icons.camera,
-                      color: Colors.white,
-                      size: 30,
-                    ),
+                    child:
+                        const Icon(Icons.camera, color: Colors.white, size: 30),
                   ),
                 ),
 
@@ -442,23 +531,19 @@ class _CameraPageState extends State<CameraPage> {
                       onPressed: _showHelpDialog,
                       tooltip: 'Help',
                       backgroundColor: Colors.white,
-                      child: const Icon(
-                        Icons.help_outline,
-                        color: Colors.black,
-                      ),
+                      child:
+                          const Icon(Icons.help_outline, color: Colors.black),
                     ),
                     const SizedBox(height: 8),
-                    const Text(
-                      "Snap Tips",
-                      style: TextStyle(color: Colors.white70),
-                    ),
+                    const Text("Snap Tips",
+                        style: TextStyle(color: Colors.white70)),
                   ],
                 ),
               ],
             ),
           ),
 
-          // Classification card overlay
+          // Classification overlay
           if (_isImageClassified)
             GestureDetector(
               onTap: _resetClassification,
@@ -470,7 +555,7 @@ class _CameraPageState extends State<CameraPage> {
                     clipBehavior: Clip.hardEdge,
                     child: SizedBox(
                       width: 380,
-                      height: 500,
+                      height: 520,
                       child: Padding(
                         padding: const EdgeInsets.all(16.0),
                         child: SingleChildScrollView(
@@ -488,12 +573,12 @@ class _CameraPageState extends State<CameraPage> {
                                       image: _image == null
                                           ? const DecorationImage(
                                               image: AssetImage(
-                                                'assets/upload.jpg',
-                                              ),
+                                                  'assets/upload.jpg'),
+                                              fit: BoxFit.cover,
                                             )
                                           : DecorationImage(
                                               image: FileImage(_image!),
-                                              fit: BoxFit.fill,
+                                              fit: BoxFit.cover,
                                             ),
                                     ),
                                   ),
@@ -501,10 +586,8 @@ class _CameraPageState extends State<CameraPage> {
                                     right: 8,
                                     top: 8,
                                     child: IconButton(
-                                      icon: const Icon(
-                                        Icons.close,
-                                        color: Colors.red,
-                                      ),
+                                      icon: const Icon(Icons.close,
+                                          color: Colors.red),
                                       onPressed: _resetClassification,
                                     ),
                                   ),
@@ -518,78 +601,42 @@ class _CameraPageState extends State<CameraPage> {
                                     fontSize: 18,
                                     fontWeight: FontWeight.bold,
                                   ),
+                                  textAlign: TextAlign.center,
                                 ),
-                              const SizedBox(height: 12),
+                              const SizedBox(height: 10),
                               if (_confidence != null)
                                 Text(
                                   "The Accuracy is ${_confidence!.toStringAsFixed(0)}%",
-                                  style: const TextStyle(fontSize: 18),
+                                  style: const TextStyle(fontSize: 16),
                                 ),
                               const SizedBox(height: 12),
-
-                              // Display description based on the insect detected
-                              if (_label != null && _label != "0 Unclassified")
+                              if (_description != null &&
+                                  _description!.trim().isNotEmpty)
                                 Text(
-                                  _getPestDescription(
-                                    _label,
-                                  )!, // No need to check null here as we already handle it
+                                  _description!,
                                   style: const TextStyle(
-                                    fontSize: 16,
+                                    fontSize: 14,
                                     fontStyle: FontStyle.italic,
                                     color: Colors.grey,
                                   ),
                                   textAlign: TextAlign.center,
                                 ),
-                              const SizedBox(height: 12),
-
-                              // Additional pest-related info (if needed)
-                              if (_label == "1 Coconut Rhinoceros Beetle") ...[
-                                Text(
-                                  'The coconut rhinoceros beetle (Oryctes rhinoceros) is a species of beetle in the Scarabaeidae family. It is a major pest of coconut palms, attacking the growing shoots of the palms, which can lead to reduced fruit production and even the death of the trees.',
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                                const SizedBox(height: 8),
-                                Text(
-                                  'Adult beetles bore into the crowns of coconut palms and feed on the sap. This boring can cause significant damage to the palms, creating entry points for pathogens. The larvae develop in decaying organic matter, such as dead palm trunks and compost heaps',
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ] else if (_label == "2 Coconut Leaf Beetle") ...[
-                                Text(
-                                  'Coconut leaf beetles cause severe damage to coconut palms by feeding on the soft tissue of young leaves. The damage may stunt the growth of the palm and result in reduced yields.',
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ] else if (_label ==
-                                  "3 Coconut Scale Insect") ...[
-                                Text(
-                                  'The Coconut Scale Insect feeds on the sap of coconut palms, causing yellowing of leaves and weakening the tree, making it more susceptible to other diseases.',
-                                  style: const TextStyle(
-                                    fontSize: 162,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ],
-                              const SizedBox(height: 5),
+                              const SizedBox(height: 14),
                               Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceAround,
+                                mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   ElevatedButton(
                                     onPressed: () async {
-                                      // Save the data when the button is pressed
                                       await _saveData();
                                     },
                                     child: const Text("Save Data"),
                                   ),
                                 ],
+                              ),
+                              const SizedBox(height: 6),
+                              const Text(
+                                "Tap outside to close",
+                                style: TextStyle(color: Colors.black45),
                               ),
                             ],
                           ),
