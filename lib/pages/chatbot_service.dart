@@ -29,7 +29,7 @@ Always prioritize sustainable, long-term farm health over quick chemical fixes.
     const String apiKey = 'AIzaSyC-XUt_aPBMMrpezXswCOvmaEbZkBck3_Q';
 
     _model = GenerativeModel(
-      model: 'gemini-3-flash',
+      model: 'gemini-2.5-flash',
       apiKey: apiKey,
       // Setting the system instruction correctly here improves consistency
       systemInstruction: Content.system(_systemPrompt),

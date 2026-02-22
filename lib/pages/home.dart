@@ -222,7 +222,7 @@ class HomeContent extends StatelessWidget {
             itemBuilder: (context, index) {
               return Container(
                 margin: const EdgeInsets.only(right: 10),
-                width: 40,
+                width: 80,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(15),
                   border: Border.all(
