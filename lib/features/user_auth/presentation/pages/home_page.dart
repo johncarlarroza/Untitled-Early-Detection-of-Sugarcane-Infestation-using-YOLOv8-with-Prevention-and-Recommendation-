@@ -1,4 +1,3 @@
-import 'dart:ffi';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:early_application_1/common/toast.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -125,9 +124,9 @@ class _HomePageState extends State<HomePage> {
     final userCollection = FirebaseFirestore.instance.collection("users");
 
     return userCollection.snapshots().map(
-      (qureySnapshot) =>
-          qureySnapshot.docs.map((e) => UserModel.fromSnapshot(e)).toList(),
-    );
+          (qureySnapshot) =>
+              qureySnapshot.docs.map((e) => UserModel.fromSnapshot(e)).toList(),
+        );
   }
 
   void _createData(UserModel userModel) {
