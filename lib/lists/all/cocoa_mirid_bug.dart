@@ -17,8 +17,8 @@ class _CocoaMiridBugPageState extends State<CocoaMiridBugPage> {
   Widget build(BuildContext context) {
     final List<String> images = [
       widget.pest.imageUrl,
-      'assets/pests/cocoa_mirid_bug_2.jpg',
-      'assets/pests/cocoa_mirid_bug_3.jpg'
+      'assets/pests/cocoa_mirid_bug.png',
+      'assets/pests/cocoa_mirid_bug2.png'
     ];
 
     return Scaffold(
@@ -99,34 +99,42 @@ class _CocoaMiridBugPageState extends State<CocoaMiridBugPage> {
                     children: [
                       const Text(
                         'Description',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 10),
-                      Text(widget.pest.description, style: const TextStyle(fontSize: 16)),
+                      Text(widget.pest.description,
+                          style: const TextStyle(fontSize: 16)),
                       const SizedBox(height: 16),
-
                       const Text(
                         'Detailed Information',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 10),
-                      Text('Sap-sucking capsid bugs that create wounds on pods and stems. Wounds can become lesions and may lead to dieback.', style: const TextStyle(fontSize: 16)),
+                      Text(
+                          'Sap-sucking capsid bugs that create wounds on pods and stems. Wounds can become lesions and may lead to dieback.',
+                          style: const TextStyle(fontSize: 16)),
                       const SizedBox(height: 16),
-
                       const Text(
                         'Biology and Behavior',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 10),
-                      Text('Often feed at night and inject toxins while sucking sap, causing tissue damage.', style: const TextStyle(fontSize: 16)),
+                      Text(
+                          'Often feed at night and inject toxins while sucking sap, causing tissue damage.',
+                          style: const TextStyle(fontSize: 16)),
                       const SizedBox(height: 16),
-
                       const Text(
                         'Control / Mitigation',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 10),
-                      Text('Prune damaged parts, keep farm clean, reduce shade where too dense, monitor regularly, and apply recommended insecticides only when necessary following local guidance.', style: const TextStyle(fontSize: 16)),
+                      Text(
+                          'Prune damaged parts, keep farm clean, reduce shade where too dense, monitor regularly, and apply recommended insecticides only when necessary following local guidance.',
+                          style: const TextStyle(fontSize: 16)),
                     ],
                   ),
                 ),

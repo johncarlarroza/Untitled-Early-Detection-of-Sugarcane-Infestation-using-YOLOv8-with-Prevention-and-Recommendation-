@@ -17,8 +17,8 @@ class _MealybugsPageState extends State<MealybugsPage> {
   Widget build(BuildContext context) {
     final List<String> images = [
       widget.pest.imageUrl,
-      'assets/pests/mealybugs_2.jpg',
-      'assets/pests/mealybugs_3.jpg'
+      'assets/pests/mealybugs.png',
+      'assets/pests/mealybugs2.png'
     ];
 
     return Scaffold(
@@ -99,34 +99,42 @@ class _MealybugsPageState extends State<MealybugsPage> {
                     children: [
                       const Text(
                         'Description',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 10),
-                      Text(widget.pest.description, style: const TextStyle(fontSize: 16)),
+                      Text(widget.pest.description,
+                          style: const TextStyle(fontSize: 16)),
                       const SizedBox(height: 16),
-
                       const Text(
                         'Detailed Information',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 10),
-                      Text('Cottony-looking insects that suck sap and weaken plants; may also transmit diseases. Ants often protect them.', style: const TextStyle(fontSize: 16)),
+                      Text(
+                          'Cottony-looking insects that suck sap and weaken plants; may also transmit diseases. Ants often protect them.',
+                          style: const TextStyle(fontSize: 16)),
                       const SizedBox(height: 16),
-
                       const Text(
                         'Biology and Behavior',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 10),
-                      Text('They cluster on stems, leaves, and pods and multiply quickly, especially when ants are present.', style: const TextStyle(fontSize: 16)),
+                      Text(
+                          'They cluster on stems, leaves, and pods and multiply quickly, especially when ants are present.',
+                          style: const TextStyle(fontSize: 16)),
                       const SizedBox(height: 16),
-
                       const Text(
                         'Control / Mitigation',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 10),
-                      Text('Control ants, wash colonies off with water, prune heavily infested parts, and use safe sprays (e.g., neem oil) or recommended control methods.', style: const TextStyle(fontSize: 16)),
+                      Text(
+                          'Control ants, wash colonies off with water, prune heavily infested parts, and use safe sprays (e.g., neem oil) or recommended control methods.',
+                          style: const TextStyle(fontSize: 16)),
                     ],
                   ),
                 ),

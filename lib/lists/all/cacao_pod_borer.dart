@@ -17,8 +17,8 @@ class _CacaoPodBorerPageState extends State<CacaoPodBorerPage> {
   Widget build(BuildContext context) {
     final List<String> images = [
       widget.pest.imageUrl,
-      'assets/pests/cacao_pod_borer_2.jpg',
-      'assets/pests/cacao_pod_borer_3.jpg'
+      'assets/pests/cacao_pod_borer.jpg',
+      'assets/pests/cacao_pod_borer2.jpg'
     ];
 
     return Scaffold(
@@ -99,34 +99,42 @@ class _CacaoPodBorerPageState extends State<CacaoPodBorerPage> {
                     children: [
                       const Text(
                         'Description',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 10),
-                      Text(widget.pest.description, style: const TextStyle(fontSize: 16)),
+                      Text(widget.pest.description,
+                          style: const TextStyle(fontSize: 16)),
                       const SizedBox(height: 16),
-
                       const Text(
                         'Detailed Information',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 10),
-                      Text('One of the most harmful pests in many cacao-growing regions. Larvae bore into pods and damage beans, reducing quality and yield.', style: const TextStyle(fontSize: 16)),
+                      Text(
+                          'One of the most harmful pests in many cacao-growing regions. Larvae bore into pods and damage beans, reducing quality and yield.',
+                          style: const TextStyle(fontSize: 16)),
                       const SizedBox(height: 16),
-
                       const Text(
                         'Biology and Behavior',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 10),
-                      Text('Adult moths lay eggs on pod surfaces. After hatching, larvae tunnel into pods and feed on developing beans.', style: const TextStyle(fontSize: 16)),
+                      Text(
+                          'Adult moths lay eggs on pod surfaces. After hatching, larvae tunnel into pods and feed on developing beans.',
+                          style: const TextStyle(fontSize: 16)),
                       const SizedBox(height: 16),
-
                       const Text(
                         'Control / Mitigation',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 10),
-                      Text('Harvest pods regularly, remove/destroy infested pods, use pheromone traps where available, maintain sanitation, and encourage natural enemies (e.g., parasitoid wasps).', style: const TextStyle(fontSize: 16)),
+                      Text(
+                          'Harvest pods regularly, remove/destroy infested pods, use pheromone traps where available, maintain sanitation, and encourage natural enemies (e.g., parasitoid wasps).',
+                          style: const TextStyle(fontSize: 16)),
                     ],
                   ),
                 ),

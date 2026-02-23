@@ -19,7 +19,7 @@ class PestListPage extends StatelessWidget {
       type: "pest",
       name: "Cacao Pod Borer",
       description: "A tiny moth pest whose larva drills into cacao pods.",
-      imageUrl: "assets/pests/cacao_pod_borer.jpg",
+      imageUrl: "assets/pests/cacao_pod_borer.png",
       fulldescription: """
 Description:
 A tiny moth pest whose baby stage (larva) drills into cacao pods.
@@ -38,7 +38,7 @@ Harvest pods regularly, remove infested pods, use pheromone traps, and encourage
       type: "pest",
       name: "Cocoa Mirid Bug (Capsid Bug)",
       description: "A small insect that sucks sap from cacao stems and pods.",
-      imageUrl: "assets/pests/cocoa_mirid_bug.jpg",
+      imageUrl: "assets/pests/cocoa_mirid_bug.png",
       fulldescription: """
 Description:
 A small insect that sucks sap from cacao stems and pods.
@@ -57,7 +57,7 @@ Trim damaged parts, keep the plantation clean, and use recommended insecticides 
       type: "pest",
       name: "Mealybugs",
       description: "Tiny white insects that look like cotton.",
-      imageUrl: "assets/pests/mealybugs.jpg",
+      imageUrl: "assets/pests/mealybugs.png",
       fulldescription: """
 Description:
 Tiny white insects that look like they’re covered in cotton.

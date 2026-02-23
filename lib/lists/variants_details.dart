@@ -19,7 +19,7 @@ Description:
 Criollo is one of the rarest and highest-quality cocoa varieties, valued for its fine flavor and aroma.
 
 Detailed Information:
-Criollo cocoa is often used in premium chocolates. It usually has lower bitterness and a more complex fruity/floral taste.
+Criollo cocoa is often used in premium chocolates. SIt usually has lower bitterness and a more complex fruity/floral taste.
 
 Characteristics:
 - Fine flavor and aroma

@@ -97,3 +97,7 @@ flutter:
     - assets/b3.gif
     - assets/b4.gif
     - assets/b5.gif
+    
+    - assets/pests/
+    - assets/diseases/
+    - assets/varieties/

@@ -17,7 +17,7 @@ class _CocoaShieldBugsPageState extends State<CocoaShieldBugsPage> {
   Widget build(BuildContext context) {
     final List<String> images = [
       widget.pest.imageUrl,
-      'assets/pests/cocoa_shield_bugs_2.jpg',
+      'assets/pests/cocoa_shield_bugs.jpg',
       'assets/pests/cocoa_shield_bugs_3.jpg'
     ];
 
@@ -99,34 +99,42 @@ class _CocoaShieldBugsPageState extends State<CocoaShieldBugsPage> {
                     children: [
                       const Text(
                         'Description',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 10),
-                      Text(widget.pest.description, style: const TextStyle(fontSize: 16)),
+                      Text(widget.pest.description,
+                          style: const TextStyle(fontSize: 16)),
                       const SizedBox(height: 16),
-
                       const Text(
                         'Detailed Information',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 10),
-                      Text('Shield-shaped bugs that pierce pods and suck sap, causing spots, deformities, and reduced bean quality.', style: const TextStyle(fontSize: 16)),
+                      Text(
+                          'Shield-shaped bugs that pierce pods and suck sap, causing spots, deformities, and reduced bean quality.',
+                          style: const TextStyle(fontSize: 16)),
                       const SizedBox(height: 16),
-
                       const Text(
                         'Biology and Behavior',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 10),
-                      Text('Feed using needle-like mouthparts, often hiding under leaves or on pods.', style: const TextStyle(fontSize: 16)),
+                      Text(
+                          'Feed using needle-like mouthparts, often hiding under leaves or on pods.',
+                          style: const TextStyle(fontSize: 16)),
                       const SizedBox(height: 16),
-
                       const Text(
                         'Control / Mitigation',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 10),
-                      Text('Hand-pick where practical, use traps, protect predators, and use pesticides only when needed and recommended.', style: const TextStyle(fontSize: 16)),
+                      Text(
+                          'Hand-pick where practical, use traps, protect predators, and use pesticides only when needed and recommended.',
+                          style: const TextStyle(fontSize: 16)),
                     ],
                   ),
                 ),
