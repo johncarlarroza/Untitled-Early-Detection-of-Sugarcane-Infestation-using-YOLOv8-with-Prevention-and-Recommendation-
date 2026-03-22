@@ -9,7 +9,7 @@ class OffProfilePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text(''), automaticallyImplyLeading: false),
+      appBar: AppBar(automaticallyImplyLeading: false),
       body: ListView(
         children: [
           // Edit Profile ListTile
@@ -20,7 +20,7 @@ class OffProfilePage extends StatelessWidget {
           //     _navigateToEditProfile(context); // Navigate to Edit Profile page
           //   },
           // ),
-          const Divider(), // Add a line separator between items
+          // const Divider(), // Add a line separator between items
           // Suggestion ListTile
           // ListTile(
           //   leading: const Icon(Icons.lightbulb_outline),

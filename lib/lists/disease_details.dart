@@ -98,7 +98,7 @@ Mitigation:
       type: "disease",
       name: "Cacao Swollen Shoot Virus (CSSV)",
       description: "Viral disease causing swelling and tree decline.",
-      imageUrl: "assets/diseases/cssv.jpg",
+      imageUrl: "assets/images/cacoswollenshoot1.png",
       fulldescription: """
 Description:
 CSSV causes swelling of shoots and reduces cacao productivity.
@@ -124,7 +124,7 @@ Mitigation:
       type: "disease",
       name: "Vascular-Streak Dieback (VSD)",
       description: "Yellowing leaves, leaf drop, and branch dieback.",
-      imageUrl: "assets/diseases/vsd.jpg",
+      imageUrl: "assets/images/cocoacanker2.png",
       fulldescription: """
 Description:
 VSD causes leaf yellowing, leaf drop, and dieback of branches.
@@ -150,7 +150,7 @@ Mitigation:
       type: "disease",
       name: "Anthracnose (Leaf & Pod Spot)",
       description: "Dark spots on leaves/pods; may lead to dieback.",
-      imageUrl: "assets/diseases/anthracnose.jpg",
+      imageUrl: "assets/images/anthracnose.png",
       fulldescription: """
 Description:
 Anthracnose causes dark lesions on cacao leaves, stems, and pods.
@@ -176,7 +176,7 @@ Mitigation:
       type: "disease",
       name: "Cercospora Leaf Spot",
       description: "Leaf spots that reduce photosynthesis and weaken plants.",
-      imageUrl: "assets/diseases/cercospora.jpg",
+      imageUrl: "assets/images/cerosporaleafspot.png",
       fulldescription: """
 Description:
 Cercospora leaf spot causes brown/gray spots on cacao leaves.
@@ -201,7 +201,7 @@ Mitigation:
       type: "disease",
       name: "Pink Disease",
       description: "Pinkish fungal growth on branches causing dieback.",
-      imageUrl: "assets/diseases/pink_disease.jpg",
+      imageUrl: "assets/images/pinkdisease.png",
       fulldescription: """
 Description:
 Pink disease affects branches and stems, sometimes showing pinkish fungal growth.
@@ -226,7 +226,7 @@ Mitigation:
       type: "disease",
       name: "Cherelle Wilt",
       description: "Young pods shrivel and drop before maturity.",
-      imageUrl: "assets/diseases/cherelle_wilt.jpg",
+      imageUrl: "assets/images/cherellewilt.png",
       fulldescription: """
 Description:
 Cherelle wilt occurs when young cacao pods stop growing, shrivel, and fall.
@@ -251,7 +251,7 @@ Mitigation:
       type: "disease",
       name: "Cocoa Canker / Dieback",
       description: "Stem lesions and branch dieback; worsened by stress.",
-      imageUrl: "assets/diseases/canker_dieback.jpg",
+      imageUrl: "assets/images/cocoacanker1.png",
       fulldescription: """
 Description:
 Canker/dieback involves lesions on stems or branches followed by drying of affected parts.

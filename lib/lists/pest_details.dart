@@ -57,7 +57,7 @@ Trim damaged parts, keep the plantation clean, and use recommended insecticides 
       type: "pest",
       name: "Mealybugs",
       description: "Tiny white insects that look like cotton.",
-      imageUrl: "assets/pests/mealybugs2.png",
+      imageUrl: "assets/pests/mealybugs.png",
       fulldescription: """
 Description:
 Tiny white insects that look like they’re covered in cotton.
