@@ -17,7 +17,7 @@ class _CriolloPageState extends State<CriolloPage> {
   Widget build(BuildContext context) {
     final List<String> images = [
       widget.variety.imageUrl,
-      'assets/varieties/criollo_2.jpg'
+      'assets/images/criollo1.png'
     ];
 
     return Scaffold(
@@ -98,34 +98,42 @@ class _CriolloPageState extends State<CriolloPage> {
                     children: [
                       const Text(
                         'Description',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 10),
-                      Text(widget.variety.description, style: const TextStyle(fontSize: 16)),
+                      Text(widget.variety.description,
+                          style: const TextStyle(fontSize: 16)),
                       const SizedBox(height: 16),
-
                       const Text(
                         'Detailed Information',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 10),
-                      Text('Criollo is known for fine flavor and aroma but is often more delicate and lower yielding.', style: const TextStyle(fontSize: 16)),
+                      Text(
+                          'Criollo is known for fine flavor and aroma but is often more delicate and lower yielding.',
+                          style: const TextStyle(fontSize: 16)),
                       const SizedBox(height: 16),
-
                       const Text(
                         'Biology and Behavior',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 10),
-                      Text('Generally prized for quality; may require more care and good farm management.', style: const TextStyle(fontSize: 16)),
+                      Text(
+                          'Generally prized for quality; may require more care and good farm management.',
+                          style: const TextStyle(fontSize: 16)),
                       const SizedBox(height: 16),
-
                       const Text(
                         'Control / Mitigation',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 10),
-                      Text('Use good agronomy: proper shade management, nutrition, pruning, and pest/disease monitoring.', style: const TextStyle(fontSize: 16)),
+                      Text(
+                          'Use good agronomy: proper shade management, nutrition, pruning, and pest/disease monitoring.',
+                          style: const TextStyle(fontSize: 16)),
                     ],
                   ),
                 ),

@@ -17,8 +17,8 @@ class _VsdPageState extends State<VsdPage> {
   Widget build(BuildContext context) {
     final List<String> images = [
       widget.disease.imageUrl,
-      'assets/diseases/vsd_2.jpg',
-      'assets/diseases/vsd_3.jpg'
+      'assets/images/cacoswollenshoot1.png',
+      'assets/images/cacoswollenshoot2.png'
     ];
 
     return Scaffold(
@@ -99,34 +99,42 @@ class _VsdPageState extends State<VsdPage> {
                     children: [
                       const Text(
                         'Description',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 10),
-                      Text(widget.disease.description, style: const TextStyle(fontSize: 16)),
+                      Text(widget.disease.description,
+                          style: const TextStyle(fontSize: 16)),
                       const SizedBox(height: 16),
-
                       const Text(
                         'Detailed Information',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 10),
-                      Text('Causes leaf yellowing, leaf drop, and branch dieback; can weaken trees and reduce yield.', style: const TextStyle(fontSize: 16)),
+                      Text(
+                          'Causes leaf yellowing, leaf drop, and branch dieback; can weaken trees and reduce yield.',
+                          style: const TextStyle(fontSize: 16)),
                       const SizedBox(height: 16),
-
                       const Text(
                         'Biology and Behavior',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 10),
-                      Text('Affects internal tissues, reducing water/nutrient movement; wet conditions can worsen impact.', style: const TextStyle(fontSize: 16)),
+                      Text(
+                          'Affects internal tissues, reducing water/nutrient movement; wet conditions can worsen impact.',
+                          style: const TextStyle(fontSize: 16)),
                       const SizedBox(height: 16),
-
                       const Text(
                         'Control / Mitigation',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 10),
-                      Text('Prune affected branches, reduce excess shade, improve airflow, maintain nutrition, and use tolerant varieties if available.', style: const TextStyle(fontSize: 16)),
+                      Text(
+                          'Prune affected branches, reduce excess shade, improve airflow, maintain nutrition, and use tolerant varieties if available.',
+                          style: const TextStyle(fontSize: 16)),
                     ],
                   ),
                 ),

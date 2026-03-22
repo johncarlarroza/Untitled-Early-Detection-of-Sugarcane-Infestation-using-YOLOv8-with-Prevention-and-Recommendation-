@@ -13,7 +13,7 @@ class VariantListPage extends StatelessWidget {
       name: 'Criollo',
       description:
           'Rare premium cocoa variety known for fine flavor and low bitterness.',
-      imageUrl: 'assets/varieties/criollo.jpg',
+      imageUrl: 'assets/varieties/criollo.png',
       fulldescription: """
 Description:
 Criollo is one of the rarest and highest-quality cocoa varieties, valued for its fine flavor and aroma.
@@ -35,7 +35,7 @@ Plant in well-managed farms, maintain good pruning and sanitation, and protect a
       name: 'Forastero',
       description:
           'Most common cocoa variety; strong, hardy, and widely cultivated.',
-      imageUrl: 'assets/varieties/forastero.jpg',
+      imageUrl: 'assets/varieties/forastero.png',
       fulldescription: """
 Description:
 Forastero is the most widely grown cocoa variety in the world.
@@ -57,7 +57,7 @@ Maintain good farm sanitation, harvest regularly, and apply proper pruning and p
       name: 'Trinitario',
       description:
           'Hybrid variety combining Criollo quality and Forastero strength.',
-      imageUrl: 'assets/varieties/trinitario.jpg',
+      imageUrl: 'assets/varieties/trinitario.png',
       fulldescription: """
 Description:
 Trinitario is a hybrid cocoa variety developed from Criollo and Forastero.

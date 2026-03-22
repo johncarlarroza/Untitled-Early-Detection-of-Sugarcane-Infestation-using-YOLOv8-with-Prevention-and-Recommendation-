@@ -17,8 +17,8 @@ class _BeanWeevilsPageState extends State<BeanWeevilsPage> {
   Widget build(BuildContext context) {
     final List<String> images = [
       widget.pest.imageUrl,
-      'assets/pests/bean_weevils_2.jpg',
-      'assets/pests/bean_weevils_3.jpg'
+      'assets/images/beanweavels1.png',
+      'assets/images/beanweavels2.png'
     ];
 
     return Scaffold(
@@ -99,34 +99,42 @@ class _BeanWeevilsPageState extends State<BeanWeevilsPage> {
                     children: [
                       const Text(
                         'Description',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 10),
-                      Text(widget.pest.description, style: const TextStyle(fontSize: 16)),
+                      Text(widget.pest.description,
+                          style: const TextStyle(fontSize: 16)),
                       const SizedBox(height: 16),
-
                       const Text(
                         'Detailed Information',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 10),
-                      Text('Storage pests that infest dried cacao beans after harvest, causing weight loss and quality reduction.', style: const TextStyle(fontSize: 16)),
+                      Text(
+                          'Storage pests that infest dried cacao beans after harvest, causing weight loss and quality reduction.',
+                          style: const TextStyle(fontSize: 16)),
                       const SizedBox(height: 16),
-
                       const Text(
                         'Biology and Behavior',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 10),
-                      Text('Eggs laid on stored beans; larvae develop inside beans.', style: const TextStyle(fontSize: 16)),
+                      Text(
+                          'Eggs laid on stored beans; larvae develop inside beans.',
+                          style: const TextStyle(fontSize: 16)),
                       const SizedBox(height: 16),
-
                       const Text(
                         'Control / Mitigation',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 10),
-                      Text('Dry beans properly, store in sealed/clean containers, keep storage dry, and inspect stocks regularly.', style: const TextStyle(fontSize: 16)),
+                      Text(
+                          'Dry beans properly, store in sealed/clean containers, keep storage dry, and inspect stocks regularly.',
+                          style: const TextStyle(fontSize: 16)),
                     ],
                   ),
                 ),

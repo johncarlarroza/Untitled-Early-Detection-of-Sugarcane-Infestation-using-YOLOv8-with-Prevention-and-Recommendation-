@@ -19,7 +19,7 @@ class DiseaseListPage extends StatelessWidget {
       type: "disease",
       name: "Black Pod Disease",
       description: "Pod rot that turns cacao pods dark/black in wet weather.",
-      imageUrl: "assets/diseases/black_pod.jpg",
+      imageUrl: "assets/diseases/black_pod.png",
       fulldescription: """
 Description:
 Black Pod Disease causes cacao pods to rot and turn dark/black, leading to major yield loss.
@@ -46,7 +46,7 @@ Mitigation:
       type: "disease",
       name: "Frosty Pod Rot",
       description: "White ‘frosty’ coating on pods that ruins beans.",
-      imageUrl: "assets/diseases/frosty_pod_rot.jpg",
+      imageUrl: "assets/diseases/frosty_pod_rot.png",
       fulldescription: """
 Description:
 Frosty Pod Rot produces a white powdery ‘frosty’ growth on cacao pods and ruins bean quality.
@@ -72,7 +72,7 @@ Mitigation:
       type: "disease",
       name: "Witches’ Broom",
       description: "Abnormal clustered shoots (‘brooms’) and reduced yield.",
-      imageUrl: "assets/diseases/witches_broom.jpg",
+      imageUrl: "assets/diseases/witches_broom.png",
       fulldescription: """
 Description:
 Witches’ Broom causes abnormal growth that looks like dense clustered shoots (“brooms”).

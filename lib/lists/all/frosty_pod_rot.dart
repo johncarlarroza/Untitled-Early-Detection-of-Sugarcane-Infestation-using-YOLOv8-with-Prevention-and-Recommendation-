@@ -17,8 +17,7 @@ class _FrostyPodRotPageState extends State<FrostyPodRotPage> {
   Widget build(BuildContext context) {
     final List<String> images = [
       widget.disease.imageUrl,
-      'assets/diseases/frosty_pod_rot_2.jpg',
-      'assets/diseases/frosty_pod_rot_3.jpg'
+      'assets/diseases/frosty_pod_rot1.png'
     ];
 
     return Scaffold(
@@ -99,34 +98,42 @@ class _FrostyPodRotPageState extends State<FrostyPodRotPage> {
                     children: [
                       const Text(
                         'Description',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 10),
-                      Text(widget.disease.description, style: const TextStyle(fontSize: 16)),
+                      Text(widget.disease.description,
+                          style: const TextStyle(fontSize: 16)),
                       const SizedBox(height: 16),
-
                       const Text(
                         'Detailed Information',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 10),
-                      Text('Disease that forms a white ‘frosty’ growth on pods and severely reduces bean quality and yield.', style: const TextStyle(fontSize: 16)),
+                      Text(
+                          'Disease that forms a white ‘frosty’ growth on pods and severely reduces bean quality and yield.',
+                          style: const TextStyle(fontSize: 16)),
                       const SizedBox(height: 16),
-
                       const Text(
                         'Biology and Behavior',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 10),
-                      Text('Spreads via spores favored by humid environments; early infections may be hard to notice.', style: const TextStyle(fontSize: 16)),
+                      Text(
+                          'Spreads via spores favored by humid environments; early infections may be hard to notice.',
+                          style: const TextStyle(fontSize: 16)),
                       const SizedBox(height: 16),
-
                       const Text(
                         'Control / Mitigation',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 10),
-                      Text('Remove and destroy infected pods, maintain sanitation, prune to reduce humidity, and follow local management recommendations.', style: const TextStyle(fontSize: 16)),
+                      Text(
+                          'Remove and destroy infected pods, maintain sanitation, prune to reduce humidity, and follow local management recommendations.',
+                          style: const TextStyle(fontSize: 16)),
                     ],
                   ),
                 ),

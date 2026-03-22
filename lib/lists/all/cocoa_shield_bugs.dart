@@ -17,8 +17,8 @@ class _CocoaShieldBugsPageState extends State<CocoaShieldBugsPage> {
   Widget build(BuildContext context) {
     final List<String> images = [
       widget.pest.imageUrl,
-      'assets/pests/cocoa_shield_bugs.jpg',
-      'assets/pests/cocoa_shield_bugs_3.jpg'
+      'assets/images/cocoashieldbugs1.png',
+      'assets/images/cocoashieldbugs2.png'
     ];
 
     return Scaffold(

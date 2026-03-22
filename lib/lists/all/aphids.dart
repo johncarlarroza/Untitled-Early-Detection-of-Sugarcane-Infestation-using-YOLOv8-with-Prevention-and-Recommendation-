@@ -17,8 +17,8 @@ class _AphidsPageState extends State<AphidsPage> {
   Widget build(BuildContext context) {
     final List<String> images = [
       widget.pest.imageUrl,
-      'assets/pests/aphids_2.jpg',
-      'assets/pests/aphids_3.jpg'
+      'assets/images/aphids2.png',
+      'assets/images/aphids3.png'
     ];
 
     return Scaffold(
@@ -99,34 +99,42 @@ class _AphidsPageState extends State<AphidsPage> {
                     children: [
                       const Text(
                         'Description',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 10),
-                      Text(widget.pest.description, style: const TextStyle(fontSize: 16)),
+                      Text(widget.pest.description,
+                          style: const TextStyle(fontSize: 16)),
                       const SizedBox(height: 16),
-
                       const Text(
                         'Detailed Information',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 10),
-                      Text('Small soft-bodied insects that cluster on new growth. They can cause leaf curl and transmit plant viruses.', style: const TextStyle(fontSize: 16)),
+                      Text(
+                          'Small soft-bodied insects that cluster on new growth. They can cause leaf curl and transmit plant viruses.',
+                          style: const TextStyle(fontSize: 16)),
                       const SizedBox(height: 16),
-
                       const Text(
                         'Biology and Behavior',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 10),
-                      Text('Reproduce rapidly in warm conditions and can spread between plants easily.', style: const TextStyle(fontSize: 16)),
+                      Text(
+                          'Reproduce rapidly in warm conditions and can spread between plants easily.',
+                          style: const TextStyle(fontSize: 16)),
                       const SizedBox(height: 16),
-
                       const Text(
                         'Control / Mitigation',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 10),
-                      Text('Spray water to dislodge, encourage natural predators (ladybugs, lacewings), and use mild organic sprays if needed.', style: const TextStyle(fontSize: 16)),
+                      Text(
+                          'Spray water to dislodge, encourage natural predators (ladybugs, lacewings), and use mild organic sprays if needed.',
+                          style: const TextStyle(fontSize: 16)),
                     ],
                   ),
                 ),

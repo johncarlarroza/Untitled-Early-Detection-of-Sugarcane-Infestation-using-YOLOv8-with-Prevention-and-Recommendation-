@@ -17,8 +17,8 @@ class _RedBandedThripsPageState extends State<RedBandedThripsPage> {
   Widget build(BuildContext context) {
     final List<String> images = [
       widget.pest.imageUrl,
-      'assets/pests/red_banded_thrips_2.jpg',
-      'assets/pests/red_banded_thrips_3.jpg'
+      'assets/images/redbandedthrips2.png',
+      'assets/images/redbandedthrips3.png'
     ];
 
     return Scaffold(
@@ -99,34 +99,42 @@ class _RedBandedThripsPageState extends State<RedBandedThripsPage> {
                     children: [
                       const Text(
                         'Description',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 10),
-                      Text(widget.pest.description, style: const TextStyle(fontSize: 16)),
+                      Text(widget.pest.description,
+                          style: const TextStyle(fontSize: 16)),
                       const SizedBox(height: 16),
-
                       const Text(
                         'Detailed Information',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 10),
-                      Text('Tiny insects that rasp plant tissue and cause silvery, dry-looking leaves. Can reduce plant vigor.', style: const TextStyle(fontSize: 16)),
+                      Text(
+                          'Tiny insects that rasp plant tissue and cause silvery, dry-looking leaves. Can reduce plant vigor.',
+                          style: const TextStyle(fontSize: 16)),
                       const SizedBox(height: 16),
-
                       const Text(
                         'Biology and Behavior',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 10),
-                      Text('Prefer dry conditions and often hide under leaves, feeding on tender tissue.', style: const TextStyle(fontSize: 16)),
+                      Text(
+                          'Prefer dry conditions and often hide under leaves, feeding on tender tissue.',
+                          style: const TextStyle(fontSize: 16)),
                       const SizedBox(height: 16),
-
                       const Text(
                         'Control / Mitigation',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 10),
-                      Text('Maintain plant health and moisture, remove damaged leaves, use sticky traps, and apply safe insecticides if required.', style: const TextStyle(fontSize: 16)),
+                      Text(
+                          'Maintain plant health and moisture, remove damaged leaves, use sticky traps, and apply safe insecticides if required.',
+                          style: const TextStyle(fontSize: 16)),
                     ],
                   ),
                 ),

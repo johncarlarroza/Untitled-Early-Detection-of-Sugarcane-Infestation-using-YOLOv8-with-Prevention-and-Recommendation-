@@ -1,8 +1,8 @@
 import 'package:early_application_1/camera/cameraonline.dart';
 import 'package:early_application_1/lists/disease_details.dart';
 import 'package:early_application_1/lists/pest_details.dart';
-import 'package:early_application_1/lists/pest_mitigation.dart';
 import 'package:early_application_1/lists/variants_details.dart';
+
 import 'package:early_application_1/models/infos.dart';
 import 'package:early_application_1/offline/lists/pest_mitigation.dart';
 import 'package:early_application_1/pages/chatbot_page.dart';

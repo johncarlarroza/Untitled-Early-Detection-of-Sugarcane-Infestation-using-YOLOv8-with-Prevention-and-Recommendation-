@@ -17,7 +17,7 @@ class _ForasteroPageState extends State<ForasteroPage> {
   Widget build(BuildContext context) {
     final List<String> images = [
       widget.variety.imageUrl,
-      'assets/varieties/forastero_2.jpg'
+      'assets/images/forastero1.png'
     ];
 
     return Scaffold(
@@ -98,34 +98,42 @@ class _ForasteroPageState extends State<ForasteroPage> {
                     children: [
                       const Text(
                         'Description',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 10),
-                      Text(widget.variety.description, style: const TextStyle(fontSize: 16)),
+                      Text(widget.variety.description,
+                          style: const TextStyle(fontSize: 16)),
                       const SizedBox(height: 16),
-
                       const Text(
                         'Detailed Information',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 10),
-                      Text('Forastero is widely grown, generally hardier, and typically higher yielding.', style: const TextStyle(fontSize: 16)),
+                      Text(
+                          'Forastero is widely grown, generally hardier, and typically higher yielding.',
+                          style: const TextStyle(fontSize: 16)),
                       const SizedBox(height: 16),
-
                       const Text(
                         'Biology and Behavior',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 10),
-                      Text('Often more resilient to some stresses; commonly used in bulk cocoa production.', style: const TextStyle(fontSize: 16)),
+                      Text(
+                          'Often more resilient to some stresses; commonly used in bulk cocoa production.',
+                          style: const TextStyle(fontSize: 16)),
                       const SizedBox(height: 16),
-
                       const Text(
                         'Control / Mitigation',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 10),
-                      Text('Maintain good farm practices; monitor for major pests/diseases; prune for airflow and health.', style: const TextStyle(fontSize: 16)),
+                      Text(
+                          'Maintain good farm practices; monitor for major pests/diseases; prune for airflow and health.',
+                          style: const TextStyle(fontSize: 16)),
                     ],
                   ),
                 ),

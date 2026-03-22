@@ -38,7 +38,7 @@ Harvest pods regularly, remove infested pods, use pheromone traps, and encourage
       type: "pest",
       name: "Cocoa Mirid Bug (Capsid Bug)",
       description: "A small insect that sucks sap from cacao stems and pods.",
-      imageUrl: "assets/pests/cocoa_mirid_bug.png",
+      imageUrl: "assets/pests/cacao_mirid_bug.png",
       fulldescription: """
 Description:
 A small insect that sucks sap from cacao stems and pods.
@@ -57,7 +57,7 @@ Trim damaged parts, keep the plantation clean, and use recommended insecticides 
       type: "pest",
       name: "Mealybugs",
       description: "Tiny white insects that look like cotton.",
-      imageUrl: "assets/pests/mealybugs.png",
+      imageUrl: "assets/pests/mealybugs2.png",
       fulldescription: """
 Description:
 Tiny white insects that look like they’re covered in cotton.
@@ -77,7 +77,7 @@ Control ants, wash them off with water, or use natural sprays like neem oil.
       name: "Aphids",
       description:
           "Small soft insects that cluster on young leaves and shoots.",
-      imageUrl: "assets/pests/aphids.jpg",
+      imageUrl: "assets/images/aphids2.png",
       fulldescription: """
 Description:
 Very small soft insects that cluster on young leaves and shoots.
@@ -96,7 +96,7 @@ Spray water to remove them, introduce ladybugs, or use mild organic sprays.
       type: "pest",
       name: "Red-Banded Thrips",
       description: "Tiny insects that damage leaves and young pods.",
-      imageUrl: "assets/pests/red_banded_thrips.jpg",
+      imageUrl: "assets/images/redbandedthrips.png",
       fulldescription: """
 Description:
 Tiny insects with dark bodies and reddish markings.
@@ -115,7 +115,7 @@ Keep plants healthy and well-watered, remove damaged leaves, and use safe insect
       type: "pest",
       name: "Cocoa Shield Bugs (Stink Bugs)",
       description: "Shield-shaped bugs that pierce pods and suck sap.",
-      imageUrl: "assets/pests/cocoa_shield_bugs.jpg",
+      imageUrl: "assets/images/cocoashieldbugs.png",
       fulldescription: """
 Description:
 Medium-sized bugs shaped like shields.
@@ -134,7 +134,7 @@ Pick them off by hand, use traps, and protect natural predators. Use pesticides 
       type: "pest",
       name: "Stem Borers",
       description: "Larvae that tunnel inside trunks and branches.",
-      imageUrl: "assets/pests/stem_borers.jpg",
+      imageUrl: "assets/images/stemborrers.png",
       fulldescription: """
 Description:
 Beetle larvae that tunnel inside tree trunks and branches.
@@ -154,7 +154,7 @@ Cut off infected branches, seal wounds, and use biological treatments or expert-
       name: "Bean Weevils (Stored Cocoa Beetles)",
       description:
           "Small beetles that attack stored cacao beans after harvest.",
-      imageUrl: "assets/pests/bean_weevils.jpg",
+      imageUrl: "assets/images/beanweavels.png",
       fulldescription: """
 Description:
 Small brown beetles that attack stored cacao beans.
@@ -173,7 +173,7 @@ Dry beans properly, store in sealed containers, keep storage clean, and check st
       type: "pest",
       name: "Termites",
       description: "Wood-feeding insects that attack trunks and roots.",
-      imageUrl: "assets/pests/termites.jpg",
+      imageUrl: "assets/images/termites.png",
       fulldescription: """
 Description:
 Social insects that feed on wood and plant material.
@@ -192,7 +192,7 @@ Destroy nests, treat soil when needed, reduce dry wood debris, and keep the farm
       type: "pest",
       name: "Shoot Borers",
       description: "Caterpillars that bore into young shoots causing wilting.",
-      imageUrl: "assets/pests/shoot_borers.jpg",
+      imageUrl: "assets/images/stemborrers.png",
       fulldescription: """
 Description:
 Caterpillars that bore into young shoots.

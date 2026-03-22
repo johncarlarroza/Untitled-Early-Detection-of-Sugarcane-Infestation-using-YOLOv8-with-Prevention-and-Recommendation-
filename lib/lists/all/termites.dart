@@ -17,8 +17,8 @@ class _TermitesPageState extends State<TermitesPage> {
   Widget build(BuildContext context) {
     final List<String> images = [
       widget.pest.imageUrl,
-      'assets/pests/termites_2.jpg',
-      'assets/pests/termites_3.jpg'
+      'assets/pests/termites1.png',
+      'assets/pests/termites2.png'
     ];
 
     return Scaffold(
@@ -99,34 +99,42 @@ class _TermitesPageState extends State<TermitesPage> {
                     children: [
                       const Text(
                         'Description',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 10),
-                      Text(widget.pest.description, style: const TextStyle(fontSize: 16)),
+                      Text(widget.pest.description,
+                          style: const TextStyle(fontSize: 16)),
                       const SizedBox(height: 16),
-
                       const Text(
                         'Detailed Information',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 10),
-                      Text('Wood-feeding insects that can attack roots and trunks, especially in dry seasons, weakening or killing young trees.', style: const TextStyle(fontSize: 16)),
+                      Text(
+                          'Wood-feeding insects that can attack roots and trunks, especially in dry seasons, weakening or killing young trees.',
+                          style: const TextStyle(fontSize: 16)),
                       const SizedBox(height: 16),
-
                       const Text(
                         'Biology and Behavior',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 10),
-                      Text('Live in underground colonies and travel through soil tunnels to reach food sources.', style: const TextStyle(fontSize: 16)),
+                      Text(
+                          'Live in underground colonies and travel through soil tunnels to reach food sources.',
+                          style: const TextStyle(fontSize: 16)),
                       const SizedBox(height: 16),
-
                       const Text(
                         'Control / Mitigation',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 10),
-                      Text('Destroy nests where possible, reduce woody debris, maintain balanced farm environment, and treat soil if recommended.', style: const TextStyle(fontSize: 16)),
+                      Text(
+                          'Destroy nests where possible, reduce woody debris, maintain balanced farm environment, and treat soil if recommended.',
+                          style: const TextStyle(fontSize: 16)),
                     ],
                   ),
                 ),

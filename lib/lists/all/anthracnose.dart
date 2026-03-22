@@ -17,8 +17,8 @@ class _AnthracnosePageState extends State<AnthracnosePage> {
   Widget build(BuildContext context) {
     final List<String> images = [
       widget.disease.imageUrl,
-      'assets/diseases/anthracnose_2.jpg',
-      'assets/diseases/anthracnose_3.jpg'
+      'assets/images/anthracnose.png',
+      'assets/images/anthracnose1.png'
     ];
 
     return Scaffold(
@@ -99,34 +99,42 @@ class _AnthracnosePageState extends State<AnthracnosePage> {
                     children: [
                       const Text(
                         'Description',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 10),
-                      Text(widget.disease.description, style: const TextStyle(fontSize: 16)),
+                      Text(widget.disease.description,
+                          style: const TextStyle(fontSize: 16)),
                       const SizedBox(height: 16),
-
                       const Text(
                         'Detailed Information',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 10),
-                      Text('Fungal disease causing dark leaf and pod spots; can lead to dieback and reduced pod quality.', style: const TextStyle(fontSize: 16)),
+                      Text(
+                          'Fungal disease causing dark leaf and pod spots; can lead to dieback and reduced pod quality.',
+                          style: const TextStyle(fontSize: 16)),
                       const SizedBox(height: 16),
-
                       const Text(
                         'Biology and Behavior',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 10),
-                      Text('Spores spread through rain splash and infected plant debris, often worse in humid conditions.', style: const TextStyle(fontSize: 16)),
+                      Text(
+                          'Spores spread through rain splash and infected plant debris, often worse in humid conditions.',
+                          style: const TextStyle(fontSize: 16)),
                       const SizedBox(height: 16),
-
                       const Text(
                         'Control / Mitigation',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 10),
-                      Text('Remove infected parts, improve sanitation and airflow, avoid overhead irrigation, and apply fungicide only if needed.', style: const TextStyle(fontSize: 16)),
+                      Text(
+                          'Remove infected parts, improve sanitation and airflow, avoid overhead irrigation, and apply fungicide only if needed.',
+                          style: const TextStyle(fontSize: 16)),
                     ],
                   ),
                 ),

@@ -17,8 +17,8 @@ class _WitchesBroomPageState extends State<WitchesBroomPage> {
   Widget build(BuildContext context) {
     final List<String> images = [
       widget.disease.imageUrl,
-      'assets/diseases/witches_broom_2.jpg',
-      'assets/diseases/witches_broom_3.jpg'
+      'assets/images/witchesbroom1.png',
+      'assets/images/witchesbroom1.png'
     ];
 
     return Scaffold(
@@ -99,34 +99,42 @@ class _WitchesBroomPageState extends State<WitchesBroomPage> {
                     children: [
                       const Text(
                         'Description',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 10),
-                      Text(widget.disease.description, style: const TextStyle(fontSize: 16)),
+                      Text(widget.disease.description,
+                          style: const TextStyle(fontSize: 16)),
                       const SizedBox(height: 16),
-
                       const Text(
                         'Detailed Information',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 10),
-                      Text('Causes abnormal clustered shoot growth (‘brooms’), malformed flowers/pods, and major yield reduction over time.', style: const TextStyle(fontSize: 16)),
+                      Text(
+                          'Causes abnormal clustered shoot growth (‘brooms’), malformed flowers/pods, and major yield reduction over time.',
+                          style: const TextStyle(fontSize: 16)),
                       const SizedBox(height: 16),
-
                       const Text(
                         'Biology and Behavior',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 10),
-                      Text('Infected tissues persist and spread risk increases if brooms remain on trees; moisture can favor spread.', style: const TextStyle(fontSize: 16)),
+                      Text(
+                          'Infected tissues persist and spread risk increases if brooms remain on trees; moisture can favor spread.',
+                          style: const TextStyle(fontSize: 16)),
                       const SizedBox(height: 16),
-
                       const Text(
                         'Control / Mitigation',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 10),
-                      Text('Prune and destroy brooms promptly, sanitize tools, improve airflow, and use tolerant materials where available.', style: const TextStyle(fontSize: 16)),
+                      Text(
+                          'Prune and destroy brooms promptly, sanitize tools, improve airflow, and use tolerant materials where available.',
+                          style: const TextStyle(fontSize: 16)),
                     ],
                   ),
                 ),

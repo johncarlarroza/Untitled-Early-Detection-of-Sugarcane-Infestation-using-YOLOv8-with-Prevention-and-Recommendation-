@@ -17,7 +17,7 @@ class _TrinitarioPageState extends State<TrinitarioPage> {
   Widget build(BuildContext context) {
     final List<String> images = [
       widget.variety.imageUrl,
-      'assets/varieties/trinitario_2.jpg'
+      'assets/varieties/trinitario1.png'
     ];
 
     return Scaffold(
@@ -98,34 +98,42 @@ class _TrinitarioPageState extends State<TrinitarioPage> {
                     children: [
                       const Text(
                         'Description',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 10),
-                      Text(widget.variety.description, style: const TextStyle(fontSize: 16)),
+                      Text(widget.variety.description,
+                          style: const TextStyle(fontSize: 16)),
                       const SizedBox(height: 16),
-
                       const Text(
                         'Detailed Information',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 10),
-                      Text('Trinitario is a hybrid with a balance of flavor quality and resilience.', style: const TextStyle(fontSize: 16)),
+                      Text(
+                          'Trinitario is a hybrid with a balance of flavor quality and resilience.',
+                          style: const TextStyle(fontSize: 16)),
                       const SizedBox(height: 16),
-
                       const Text(
                         'Biology and Behavior',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 10),
-                      Text('Combines traits from Criollo and Forastero; quality varies by cultivar and environment.', style: const TextStyle(fontSize: 16)),
+                      Text(
+                          'Combines traits from Criollo and Forastero; quality varies by cultivar and environment.',
+                          style: const TextStyle(fontSize: 16)),
                       const SizedBox(height: 16),
-
                       const Text(
                         'Control / Mitigation',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 10),
-                      Text('Follow standard cacao management: shade, pruning, nutrition, sanitation, and monitoring.', style: const TextStyle(fontSize: 16)),
+                      Text(
+                          'Follow standard cacao management: shade, pruning, nutrition, sanitation, and monitoring.',
+                          style: const TextStyle(fontSize: 16)),
                     ],
                   ),
                 ),

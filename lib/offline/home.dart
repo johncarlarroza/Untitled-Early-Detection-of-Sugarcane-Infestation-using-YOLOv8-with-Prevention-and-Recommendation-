@@ -1,12 +1,13 @@
+import 'package:early_application_1/lists/disease_details.dart';
+import 'package:early_application_1/lists/pest_details.dart';
+import 'package:early_application_1/lists/variants_details.dart';
 import 'package:early_application_1/offline/camera/off_camera.dart';
-import 'package:early_application_1/offline/lists/pest_mitigation.dart';
+import 'package:early_application_1/lists/pest_mitigation.dart';
 import 'package:early_application_1/offline/models/infos.dart';
+import 'package:early_application_1/offline/lists/pest_mitigation.dart';
 import 'package:early_application_1/offline/profilepage/profile.dart';
+import 'package:early_application_1/profilepage/profile.dart';
 import 'package:flutter/material.dart';
-
-import 'lists/pest_details.dart';
-import 'lists/disease_details.dart';
-import 'lists/variants_details.dart';
 
 class OffHomePage extends StatefulWidget {
   const OffHomePage({super.key});

@@ -17,8 +17,8 @@ class _PinkDiseasePageState extends State<PinkDiseasePage> {
   Widget build(BuildContext context) {
     final List<String> images = [
       widget.disease.imageUrl,
-      'assets/diseases/pink_disease_2.jpg',
-      'assets/diseases/pink_disease_3.jpg'
+      'assets/images/pinkdisease1.png',
+      'assets/iamges/pinkdisease1.png'
     ];
 
     return Scaffold(
@@ -99,34 +99,42 @@ class _PinkDiseasePageState extends State<PinkDiseasePage> {
                     children: [
                       const Text(
                         'Description',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 10),
-                      Text(widget.disease.description, style: const TextStyle(fontSize: 16)),
+                      Text(widget.disease.description,
+                          style: const TextStyle(fontSize: 16)),
                       const SizedBox(height: 16),
-
                       const Text(
                         'Detailed Information',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 10),
-                      Text('Branch disease often showing pinkish fungal growth; can girdle branches and cause dieback.', style: const TextStyle(fontSize: 16)),
+                      Text(
+                          'Branch disease often showing pinkish fungal growth; can girdle branches and cause dieback.',
+                          style: const TextStyle(fontSize: 16)),
                       const SizedBox(height: 16),
-
                       const Text(
                         'Biology and Behavior',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 10),
-                      Text('Thrives in wet and shaded conditions; spreads via spores and infected tissues.', style: const TextStyle(fontSize: 16)),
+                      Text(
+                          'Thrives in wet and shaded conditions; spreads via spores and infected tissues.',
+                          style: const TextStyle(fontSize: 16)),
                       const SizedBox(height: 16),
-
                       const Text(
                         'Control / Mitigation',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 10),
-                      Text('Prune infected branches, disinfect tools, improve airflow/light, and apply protective treatment where recommended.', style: const TextStyle(fontSize: 16)),
+                      Text(
+                          'Prune infected branches, disinfect tools, improve airflow/light, and apply protective treatment where recommended.',
+                          style: const TextStyle(fontSize: 16)),
                     ],
                   ),
                 ),

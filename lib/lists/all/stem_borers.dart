@@ -17,8 +17,8 @@ class _StemBorersPageState extends State<StemBorersPage> {
   Widget build(BuildContext context) {
     final List<String> images = [
       widget.pest.imageUrl,
-      'assets/pests/stem_borers_2.jpg',
-      'assets/pests/stem_borers_3.jpg'
+      'assets/images/stemborrers2.png',
+      'assets/images/stemborrers3.png'
     ];
 
     return Scaffold(
@@ -99,34 +99,42 @@ class _StemBorersPageState extends State<StemBorersPage> {
                     children: [
                       const Text(
                         'Description',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 10),
-                      Text(widget.pest.description, style: const TextStyle(fontSize: 16)),
+                      Text(widget.pest.description,
+                          style: const TextStyle(fontSize: 16)),
                       const SizedBox(height: 16),
-
                       const Text(
                         'Detailed Information',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 10),
-                      Text('Larvae tunnel inside trunks/branches, weakening trees and sometimes killing young plants.', style: const TextStyle(fontSize: 16)),
+                      Text(
+                          'Larvae tunnel inside trunks/branches, weakening trees and sometimes killing young plants.',
+                          style: const TextStyle(fontSize: 16)),
                       const SizedBox(height: 16),
-
                       const Text(
                         'Biology and Behavior',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 10),
-                      Text('Adults lay eggs on bark; larvae remain hidden in wood for months making early detection difficult.', style: const TextStyle(fontSize: 16)),
+                      Text(
+                          'Adults lay eggs on bark; larvae remain hidden in wood for months making early detection difficult.',
+                          style: const TextStyle(fontSize: 16)),
                       const SizedBox(height: 16),
-
                       const Text(
                         'Control / Mitigation',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 10),
-                      Text('Prune and destroy infested branches, seal wounds, maintain tree vigor, and use biological/approved treatments based on local advice.', style: const TextStyle(fontSize: 16)),
+                      Text(
+                          'Prune and destroy infested branches, seal wounds, maintain tree vigor, and use biological/approved treatments based on local advice.',
+                          style: const TextStyle(fontSize: 16)),
                     ],
                   ),
                 ),

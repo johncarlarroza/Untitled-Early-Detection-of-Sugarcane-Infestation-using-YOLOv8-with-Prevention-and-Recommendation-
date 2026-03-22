@@ -17,8 +17,8 @@ class _ShootBorersPageState extends State<ShootBorersPage> {
   Widget build(BuildContext context) {
     final List<String> images = [
       widget.pest.imageUrl,
-      'assets/pests/shoot_borers_2.jpg',
-      'assets/pests/shoot_borers_3.jpg'
+      'assets/images/stemborrers.png',
+      'assets/images/stemborrers2.png'
     ];
 
     return Scaffold(
@@ -99,34 +99,42 @@ class _ShootBorersPageState extends State<ShootBorersPage> {
                     children: [
                       const Text(
                         'Description',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 10),
-                      Text(widget.pest.description, style: const TextStyle(fontSize: 16)),
+                      Text(widget.pest.description,
+                          style: const TextStyle(fontSize: 16)),
                       const SizedBox(height: 16),
-
                       const Text(
                         'Detailed Information',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 10),
-                      Text('Caterpillars that bore into shoots, causing wilting and poor growth.', style: const TextStyle(fontSize: 16)),
+                      Text(
+                          'Caterpillars that bore into shoots, causing wilting and poor growth.',
+                          style: const TextStyle(fontSize: 16)),
                       const SizedBox(height: 16),
-
                       const Text(
                         'Biology and Behavior',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 10),
-                      Text('Larvae stay hidden inside shoots, making them hard to detect until damage appears.', style: const TextStyle(fontSize: 16)),
+                      Text(
+                          'Larvae stay hidden inside shoots, making them hard to detect until damage appears.',
+                          style: const TextStyle(fontSize: 16)),
                       const SizedBox(height: 16),
-
                       const Text(
                         'Control / Mitigation',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 10),
-                      Text('Prune affected shoots early, maintain sanitation, and apply biological insecticides if advised.', style: const TextStyle(fontSize: 16)),
+                      Text(
+                          'Prune affected shoots early, maintain sanitation, and apply biological insecticides if advised.',
+                          style: const TextStyle(fontSize: 16)),
                     ],
                   ),
                 ),

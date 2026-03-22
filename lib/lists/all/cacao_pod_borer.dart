@@ -17,8 +17,8 @@ class _CacaoPodBorerPageState extends State<CacaoPodBorerPage> {
   Widget build(BuildContext context) {
     final List<String> images = [
       widget.pest.imageUrl,
-      'assets/pests/cacao_pod_borer.jpg',
-      'assets/pests/cacao_pod_borer2.jpg'
+      'assets/images/cacao_pod_borer1.png',
+      'assets/images/cacao_pod_borer2.png'
     ];
 
     return Scaffold(
