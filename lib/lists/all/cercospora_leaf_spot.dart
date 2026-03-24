@@ -17,8 +17,8 @@ class _CercosporaLeafSpotPageState extends State<CercosporaLeafSpotPage> {
   Widget build(BuildContext context) {
     final List<String> images = [
       widget.disease.imageUrl,
-      'assets/diseases/cercospora_2.jpg',
-      'assets/diseases/cercospora_3.jpg'
+      'assets/diseases/cerosporaleafspot1.png',
+      'assets/diseases/cerosporaleafspot2.png'
     ];
 
     return Scaffold(
@@ -99,34 +99,42 @@ class _CercosporaLeafSpotPageState extends State<CercosporaLeafSpotPage> {
                     children: [
                       const Text(
                         'Description',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 10),
-                      Text(widget.disease.description, style: const TextStyle(fontSize: 16)),
+                      Text(widget.disease.description,
+                          style: const TextStyle(fontSize: 16)),
                       const SizedBox(height: 16),
-
                       const Text(
                         'Detailed Information',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 10),
-                      Text('Leaf spot disease that reduces photosynthesis, weakens seedlings/young trees, and can cause leaf drop.', style: const TextStyle(fontSize: 16)),
+                      Text(
+                          'Leaf spot disease that reduces photosynthesis, weakens seedlings/young trees, and can cause leaf drop.',
+                          style: const TextStyle(fontSize: 16)),
                       const SizedBox(height: 16),
-
                       const Text(
                         'Biology and Behavior',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 10),
-                      Text('Spores spread by wind/rain; humidity favors infection and buildup.', style: const TextStyle(fontSize: 16)),
+                      Text(
+                          'Spores spread by wind/rain; humidity favors infection and buildup.',
+                          style: const TextStyle(fontSize: 16)),
                       const SizedBox(height: 16),
-
                       const Text(
                         'Control / Mitigation',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 10),
-                      Text('Remove heavily infected leaves, improve spacing and airflow, reduce prolonged wetness, and apply recommended fungicide if required.', style: const TextStyle(fontSize: 16)),
+                      Text(
+                          'Remove heavily infected leaves, improve spacing and airflow, reduce prolonged wetness, and apply recommended fungicide if required.',
+                          style: const TextStyle(fontSize: 16)),
                     ],
                   ),
                 ),

@@ -17,8 +17,8 @@ class _CherelleWiltPageState extends State<CherelleWiltPage> {
   Widget build(BuildContext context) {
     final List<String> images = [
       widget.disease.imageUrl,
-      'assets/diseases/cherelle_wilt_2.jpg',
-      'assets/diseases/cherelle_wilt_3.jpg'
+      'assets/images/cherellewilt1.png',
+      'assets/images/cherellewilt2.png'
     ];
 
     return Scaffold(
@@ -99,34 +99,42 @@ class _CherelleWiltPageState extends State<CherelleWiltPage> {
                     children: [
                       const Text(
                         'Description',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 10),
-                      Text(widget.disease.description, style: const TextStyle(fontSize: 16)),
+                      Text(widget.disease.description,
+                          style: const TextStyle(fontSize: 16)),
                       const SizedBox(height: 16),
-
                       const Text(
                         'Detailed Information',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 10),
-                      Text('Young pods (cherelles) shrink and drop before maturity, often linked to plant stress and resource limits.', style: const TextStyle(fontSize: 16)),
+                      Text(
+                          'Young pods (cherelles) shrink and drop before maturity, often linked to plant stress and resource limits.',
+                          style: const TextStyle(fontSize: 16)),
                       const SizedBox(height: 16),
-
                       const Text(
                         'Biology and Behavior',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 10),
-                      Text('Often related to drought, nutrition imbalance, or heavy fruit load rather than a single pathogen.', style: const TextStyle(fontSize: 16)),
+                      Text(
+                          'Often related to drought, nutrition imbalance, or heavy fruit load rather than a single pathogen.',
+                          style: const TextStyle(fontSize: 16)),
                       const SizedBox(height: 16),
-
                       const Text(
                         'Control / Mitigation',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 10),
-                      Text('Improve nutrition and watering, manage shade, reduce stress, and maintain overall tree health to support pod set.', style: const TextStyle(fontSize: 16)),
+                      Text(
+                          'Improve nutrition and watering, manage shade, reduce stress, and maintain overall tree health to support pod set.',
+                          style: const TextStyle(fontSize: 16)),
                     ],
                   ),
                 ),

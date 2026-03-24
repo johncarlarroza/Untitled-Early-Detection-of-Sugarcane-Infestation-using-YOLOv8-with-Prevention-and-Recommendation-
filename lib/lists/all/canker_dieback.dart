@@ -17,8 +17,8 @@ class _CocoaCankerDiebackPageState extends State<CocoaCankerDiebackPage> {
   Widget build(BuildContext context) {
     final List<String> images = [
       widget.disease.imageUrl,
-      'assets/diseases/canker_dieback_2.jpg',
-      'assets/diseases/canker_dieback_3.jpg'
+      'assets/images/cocoacanker.png',
+      'assets/images/cocoacanker2.png'
     ];
 
     return Scaffold(
@@ -99,34 +99,42 @@ class _CocoaCankerDiebackPageState extends State<CocoaCankerDiebackPage> {
                     children: [
                       const Text(
                         'Description',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 10),
-                      Text(widget.disease.description, style: const TextStyle(fontSize: 16)),
+                      Text(widget.disease.description,
+                          style: const TextStyle(fontSize: 16)),
                       const SizedBox(height: 16),
-
                       const Text(
                         'Detailed Information',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 10),
-                      Text('Lesions on stems/branches followed by dieback; commonly worsened by stress and wounds.', style: const TextStyle(fontSize: 16)),
+                      Text(
+                          'Lesions on stems/branches followed by dieback; commonly worsened by stress and wounds.',
+                          style: const TextStyle(fontSize: 16)),
                       const SizedBox(height: 16),
-
                       const Text(
                         'Biology and Behavior',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 10),
-                      Text('Pathogens often enter through wounds; wet conditions and poor sanitation can increase risk.', style: const TextStyle(fontSize: 16)),
+                      Text(
+                          'Pathogens often enter through wounds; wet conditions and poor sanitation can increase risk.',
+                          style: const TextStyle(fontSize: 16)),
                       const SizedBox(height: 16),
-
                       const Text(
                         'Control / Mitigation',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 10),
-                      Text('Prune early, protect wounds, sanitize tools, improve tree vigor (nutrition/water), and follow local control recommendations.', style: const TextStyle(fontSize: 16)),
+                      Text(
+                          'Prune early, protect wounds, sanitize tools, improve tree vigor (nutrition/water), and follow local control recommendations.',
+                          style: const TextStyle(fontSize: 16)),
                     ],
                   ),
                 ),

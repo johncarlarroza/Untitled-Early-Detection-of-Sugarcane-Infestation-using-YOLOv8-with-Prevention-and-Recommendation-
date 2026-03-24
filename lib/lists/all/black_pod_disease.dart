@@ -17,8 +17,8 @@ class _BlackPodDiseasePageState extends State<BlackPodDiseasePage> {
   Widget build(BuildContext context) {
     final List<String> images = [
       widget.disease.imageUrl,
-      'assets/diseases/black_pod_2.jpg',
-      'assets/diseases/black_pod_3.jpg'
+      'assets/diseases/cocoacanker1.png',
+      'assets/diseases/cocoacanker2.png'
     ];
 
     return Scaffold(
@@ -99,34 +99,42 @@ class _BlackPodDiseasePageState extends State<BlackPodDiseasePage> {
                     children: [
                       const Text(
                         'Description',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 10),
-                      Text(widget.disease.description, style: const TextStyle(fontSize: 16)),
+                      Text(widget.disease.description,
+                          style: const TextStyle(fontSize: 16)),
                       const SizedBox(height: 16),
-
                       const Text(
                         'Detailed Information',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 10),
-                      Text('A major cacao disease causing pods to rot and turn dark/black, especially during rainy seasons and high humidity.', style: const TextStyle(fontSize: 16)),
+                      Text(
+                          'A major cacao disease causing pods to rot and turn dark/black, especially during rainy seasons and high humidity.',
+                          style: const TextStyle(fontSize: 16)),
                       const SizedBox(height: 16),
-
                       const Text(
                         'Biology and Behavior',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 10),
-                      Text('Often linked to water-splash spread. Infection starts on pods and can spread quickly in wet conditions.', style: const TextStyle(fontSize: 16)),
+                      Text(
+                          'Often linked to water-splash spread. Infection starts on pods and can spread quickly in wet conditions.',
+                          style: const TextStyle(fontSize: 16)),
                       const SizedBox(height: 16),
-
                       const Text(
                         'Control / Mitigation',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 10),
-                      Text('Remove and destroy infected pods, improve drainage and airflow (pruning/spacing), keep field sanitary, and apply recommended fungicides when needed.', style: const TextStyle(fontSize: 16)),
+                      Text(
+                          'Remove and destroy infected pods, improve drainage and airflow (pruning/spacing), keep field sanitary, and apply recommended fungicides when needed.',
+                          style: const TextStyle(fontSize: 16)),
                     ],
                   ),
                 ),

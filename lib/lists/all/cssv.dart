@@ -17,8 +17,8 @@ class _CssvPageState extends State<CssvPage> {
   Widget build(BuildContext context) {
     final List<String> images = [
       widget.disease.imageUrl,
-      'assets/diseases/cssv_2.jpg',
-      'assets/diseases/cssv_3.jpg'
+      'assets/images/cacoswollenshoot.png',
+      'assets/images/cacoswollenshoot2.png'
     ];
 
     return Scaffold(
@@ -99,34 +99,42 @@ class _CssvPageState extends State<CssvPage> {
                     children: [
                       const Text(
                         'Description',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 10),
-                      Text(widget.disease.description, style: const TextStyle(fontSize: 16)),
+                      Text(widget.disease.description,
+                          style: const TextStyle(fontSize: 16)),
                       const SizedBox(height: 16),
-
                       const Text(
                         'Detailed Information',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 10),
-                      Text('A viral disease that causes swelling of shoots/stems and gradual decline, often leading to severe yield loss.', style: const TextStyle(fontSize: 16)),
+                      Text(
+                          'A viral disease that causes swelling of shoots/stems and gradual decline, often leading to severe yield loss.',
+                          style: const TextStyle(fontSize: 16)),
                       const SizedBox(height: 16),
-
                       const Text(
                         'Biology and Behavior',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 10),
-                      Text('Commonly spread by insect vectors (often mealybugs) and infected planting material.', style: const TextStyle(fontSize: 16)),
+                      Text(
+                          'Commonly spread by insect vectors (often mealybugs) and infected planting material.',
+                          style: const TextStyle(fontSize: 16)),
                       const SizedBox(height: 16),
-
                       const Text(
                         'Control / Mitigation',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 10),
-                      Text('Use certified disease-free seedlings, manage mealybugs/ants, and remove infected trees when recommended by local authorities.', style: const TextStyle(fontSize: 16)),
+                      Text(
+                          'Use certified disease-free seedlings, manage mealybugs/ants, and remove infected trees when recommended by local authorities.',
+                          style: const TextStyle(fontSize: 16)),
                     ],
                   ),
                 ),
