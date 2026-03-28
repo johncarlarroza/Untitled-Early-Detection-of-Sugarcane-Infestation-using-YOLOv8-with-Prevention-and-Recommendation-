@@ -55,8 +55,9 @@ class _ReportsPageState extends State<ReportsPage> {
 
       for (final doc in pestsSnapshot.docs) {
         final data = doc.data() as Map<String, dynamic>;
-        if (!data.containsKey('timestamp') || data['timestamp'] == null)
+        if (!data.containsKey('timestamp') || data['timestamp'] == null) {
           continue;
+        }
 
         final timestamp = data['timestamp'];
         if (timestamp is! Timestamp) continue;
@@ -69,7 +70,7 @@ class _ReportsPageState extends State<ReportsPage> {
       }
 
       activeUsersPerDay = {
-        for (final e in tempActive.entries) e.key: e.value.length
+        for (final e in tempActive.entries) e.key: e.value.length,
       };
 
       if (!mounted) return;
@@ -201,6 +202,7 @@ class _ReportsPageState extends State<ReportsPage> {
         ],
       ),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Container(
             height: 52,
@@ -212,26 +214,33 @@ class _ReportsPageState extends State<ReportsPage> {
             child: Icon(icon, color: color, size: 28),
           ),
           const SizedBox(width: 14),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                title,
-                style: TextStyle(
-                  color: Colors.grey.shade700,
-                  fontWeight: FontWeight.w600,
+          Expanded(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: Colors.grey.shade700,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                value,
-                style: TextStyle(
-                  color: color,
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
+                const SizedBox(height: 4),
+                Text(
+                  value,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: color,
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ],
       ),
@@ -286,7 +295,7 @@ class _ReportsPageState extends State<ReportsPage> {
   Widget _buildPieChart() {
     if (totalUsers == 0 && totalPests == 0) {
       return const SizedBox(
-        height: 250,
+        height: 270,
         child: Center(child: Text('No data available')),
       );
     }
@@ -295,7 +304,7 @@ class _ReportsPageState extends State<ReportsPage> {
       key: _pieChartKey,
       child: Container(
         color: Colors.white,
-        height: 260,
+        height: 280,
         child: PieChart(
           PieChartData(
             centerSpaceRadius: 52,
@@ -337,7 +346,7 @@ class _ReportsPageState extends State<ReportsPage> {
   }) {
     if (data.isEmpty) {
       return const SizedBox(
-        height: 240,
+        height: 270,
         child: Center(child: Text("No data available")),
       );
     }
@@ -348,10 +357,11 @@ class _ReportsPageState extends State<ReportsPage> {
       key: chartKey,
       child: Container(
         color: Colors.white,
-        height: 260,
+        height: 290,
         child: BarChart(
           BarChartData(
             maxY: _safeMax(data),
+            alignment: BarChartAlignment.spaceAround,
             gridData: FlGridData(
               show: true,
               drawVerticalLine: false,
@@ -373,20 +383,23 @@ class _ReportsPageState extends State<ReportsPage> {
               ),
               leftTitles: AxisTitles(
                 sideTitles: SideTitles(
-                  reservedSize: 30,
+                  reservedSize: 34,
                   interval: 1,
                   showTitles: true,
                   getTitlesWidget: (value, meta) {
-                    return Text(
-                      value.toInt().toString(),
-                      style: const TextStyle(fontSize: 10),
+                    return Padding(
+                      padding: const EdgeInsets.only(right: 4),
+                      child: Text(
+                        value.toInt().toString(),
+                        style: const TextStyle(fontSize: 10),
+                      ),
                     );
                   },
                 ),
               ),
               bottomTitles: AxisTitles(
                 sideTitles: SideTitles(
-                  reservedSize: 42,
+                  reservedSize: 52,
                   showTitles: true,
                   getTitlesWidget: (value, meta) {
                     final index = value.toInt();
@@ -394,9 +407,10 @@ class _ReportsPageState extends State<ReportsPage> {
                       return const SizedBox.shrink();
                     }
                     return Padding(
-                      padding: const EdgeInsets.only(top: 8),
+                      padding: const EdgeInsets.only(top: 10),
                       child: Text(
                         entries[index].key,
+                        textAlign: TextAlign.center,
                         style: const TextStyle(fontSize: 10),
                       ),
                     );
@@ -431,7 +445,7 @@ class _ReportsPageState extends State<ReportsPage> {
   }) {
     if (data.isEmpty) {
       return const SizedBox(
-        height: 240,
+        height: 270,
         child: Center(child: Text("No data available")),
       );
     }
@@ -443,7 +457,7 @@ class _ReportsPageState extends State<ReportsPage> {
       key: chartKey,
       child: Container(
         color: Colors.white,
-        height: 260,
+        height: 290,
         child: LineChart(
           LineChartData(
             minY: 0,
@@ -469,20 +483,23 @@ class _ReportsPageState extends State<ReportsPage> {
               ),
               leftTitles: AxisTitles(
                 sideTitles: SideTitles(
-                  reservedSize: 30,
+                  reservedSize: 34,
                   interval: 1,
                   showTitles: true,
                   getTitlesWidget: (value, meta) {
-                    return Text(
-                      value.toInt().toString(),
-                      style: const TextStyle(fontSize: 10),
+                    return Padding(
+                      padding: const EdgeInsets.only(right: 4),
+                      child: Text(
+                        value.toInt().toString(),
+                        style: const TextStyle(fontSize: 10),
+                      ),
                     );
                   },
                 ),
               ),
               bottomTitles: AxisTitles(
                 sideTitles: SideTitles(
-                  reservedSize: 42,
+                  reservedSize: 52,
                   showTitles: true,
                   getTitlesWidget: (value, meta) {
                     final index = value.toInt();
@@ -490,9 +507,10 @@ class _ReportsPageState extends State<ReportsPage> {
                       return const SizedBox.shrink();
                     }
                     return Padding(
-                      padding: const EdgeInsets.only(top: 8),
+                      padding: const EdgeInsets.only(top: 10),
                       child: Text(
                         entries[index].key,
+                        textAlign: TextAlign.center,
                         style: const TextStyle(fontSize: 10),
                       ),
                     );
@@ -577,11 +595,13 @@ class _ReportsPageState extends State<ReportsPage> {
               child: pw.Column(
                 crossAxisAlignment: pw.CrossAxisAlignment.start,
                 children: [
-                  pw.Text('Summary Metrics',
-                      style: pw.TextStyle(
-                        fontWeight: pw.FontWeight.bold,
-                        fontSize: 14,
-                      )),
+                  pw.Text(
+                    'Summary Metrics',
+                    style: pw.TextStyle(
+                      fontWeight: pw.FontWeight.bold,
+                      fontSize: 14,
+                    ),
+                  ),
                   pw.SizedBox(height: 8),
                   pw.Text('Total Users: $totalUsers'),
                   pw.Text('Total Pest Detections: $totalPests'),
@@ -659,7 +679,7 @@ class _ReportsPageState extends State<ReportsPage> {
                 'Date',
                 'Pests Detected',
                 'Users Registered',
-                'Active Users'
+                'Active Users',
               ],
               data: {
                 ...pestsPerDay.keys,
@@ -696,6 +716,10 @@ class _ReportsPageState extends State<ReportsPage> {
       return const Center(child: CircularProgressIndicator());
     }
 
+    final screenWidth = MediaQuery.of(context).size.width;
+    final bool isMobile = screenWidth < 700;
+    final bool isSmallMobile = screenWidth < 480;
+
     return Scaffold(
       backgroundColor: const Color(0xFFF6F8FC),
       appBar: AppBar(
@@ -710,96 +734,100 @@ class _ReportsPageState extends State<ReportsPage> {
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 10),
-            child: ElevatedButton.icon(
-              onPressed: _exportPdf,
-              icon: const Icon(Icons.picture_as_pdf),
-              label: const Text('Download PDF'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red.shade600,
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14),
-                ),
-              ),
-            ),
+            child: isSmallMobile
+                ? IconButton(
+                    onPressed: _exportPdf,
+                    tooltip: 'Download PDF',
+                    icon: const Icon(Icons.picture_as_pdf),
+                    color: Colors.red,
+                  )
+                : ElevatedButton.icon(
+                    onPressed: _exportPdf,
+                    icon: const Icon(Icons.picture_as_pdf),
+                    label: const Text('Download PDF'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.red.shade600,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                    ),
+                  ),
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(18),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildHeaderCard(),
-            const SizedBox(height: 18),
-            LayoutBuilder(
-              builder: (context, constraints) {
-                final isWide = constraints.maxWidth > 920;
-                return GridView.count(
-                  crossAxisCount: isWide ? 2 : 2,
-                  crossAxisSpacing: 10,
-                  mainAxisSpacing: 10,
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  childAspectRatio: isWide ? 2.5 : 2.2,
-                  children: [
-                    _buildSummaryCard(
-                      title: 'Total Users',
-                      value: totalUsers.toString(),
-                      color: Colors.blue,
-                      icon: Icons.people_alt_rounded,
-                    ),
-                    _buildSummaryCard(
-                      title: 'Total Pest Detections',
-                      value: totalPests.toString(),
-                      color: Colors.red,
-                      icon: Icons.bug_report_rounded,
-                    ),
-                  ],
-                );
-              },
-            ),
-            const SizedBox(height: 18),
-            _buildSection(
-              title: 'Users vs Pests Distribution',
-              description:
-                  'This chart compares the total number of registered users and the total number of pest detections. It provides a quick overall snapshot of system participation and field activity.',
-              chart: _buildPieChart(),
-            ),
-            const SizedBox(height: 18),
-            _buildSection(
-              title: 'Pests Detected Per Day',
-              description:
-                  'This bar chart shows the number of pest detections recorded on each day. It helps administrators see activity spikes and identify periods with higher reporting volume.',
-              chart: _buildBarChart(
-                chartKey: _pestsBarKey,
-                data: pestsPerDay,
-                color: Colors.red,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(18),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildHeaderCard(),
+              const SizedBox(height: 18),
+              GridView.count(
+                crossAxisCount: isMobile ? 1 : 2,
+                crossAxisSpacing: 10,
+                mainAxisSpacing: 10,
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                childAspectRatio: isMobile ? 2.1 : 2.8,
+                children: [
+                  _buildSummaryCard(
+                    title: 'Total Users',
+                    value: totalUsers.toString(),
+                    color: Colors.blue,
+                    icon: Icons.people_alt_rounded,
+                  ),
+                  _buildSummaryCard(
+                    title: 'Total Pest Detections',
+                    value: totalPests.toString(),
+                    color: Colors.red,
+                    icon: Icons.bug_report_rounded,
+                  ),
+                ],
               ),
-            ),
-            const SizedBox(height: 18),
-            _buildSection(
-              title: 'Users Registered Per Day',
-              description:
-                  'This line chart displays how many users registered each day. It is useful for understanding account growth patterns and measuring user acquisition over time.',
-              chart: _buildLineChart(
-                chartKey: _usersLineKey,
-                data: usersPerDay,
-                color: Colors.blue,
+              const SizedBox(height: 18),
+              _buildSection(
+                title: 'Users vs Pests Distribution',
+                description:
+                    'This chart compares the total number of registered users and the total number of pest detections. It provides a quick overall snapshot of system participation and field activity.',
+                chart: _buildPieChart(),
               ),
-            ),
-            const SizedBox(height: 18),
-            _buildSection(
-              title: 'Active Users Per Day',
-              description:
-                  'This chart estimates active users by counting unique usernames that appeared in daily pest detection records. It gives a better picture of real engagement and actual reporting activity.',
-              chart: _buildBarChart(
-                chartKey: _activeUsersBarKey,
-                data: activeUsersPerDay,
-                color: Colors.green,
+              const SizedBox(height: 18),
+              _buildSection(
+                title: 'Pests Detected Per Day',
+                description:
+                    'This bar chart shows the number of pest detections recorded on each day. It helps administrators see activity spikes and identify periods with higher reporting volume.',
+                chart: _buildBarChart(
+                  chartKey: _pestsBarKey,
+                  data: pestsPerDay,
+                  color: Colors.red,
+                ),
               ),
-            ),
-          ],
+              const SizedBox(height: 18),
+              _buildSection(
+                title: 'Users Registered Per Day',
+                description:
+                    'This line chart displays how many users registered each day. It is useful for understanding account growth patterns and measuring user acquisition over time.',
+                chart: _buildLineChart(
+                  chartKey: _usersLineKey,
+                  data: usersPerDay,
+                  color: Colors.blue,
+                ),
+              ),
+              const SizedBox(height: 18),
+              _buildSection(
+                title: 'Active Users Per Day',
+                description:
+                    'This chart estimates active users by counting unique usernames that appeared in daily pest detection records. It gives a better picture of real engagement and actual reporting activity.',
+                chart: _buildBarChart(
+                  chartKey: _activeUsersBarKey,
+                  data: activeUsersPerDay,
+                  color: Colors.green,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

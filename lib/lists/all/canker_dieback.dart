@@ -17,8 +17,8 @@ class _CocoaCankerDiebackPageState extends State<CocoaCankerDiebackPage> {
   Widget build(BuildContext context) {
     final List<String> images = [
       widget.disease.imageUrl,
-      'assets/images/cocoacanker.png',
-      'assets/images/cocoacanker2.png'
+      'assets/images/cocoacanker.pn5 g',
+      'assets/images/cocoacanker2.png '
     ];
 
     return Scaffold(
