@@ -39,7 +39,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Pestecane',
+      title: 'PesCoa1',
       routes: {
         '/': (context) => const SplashScreen(child: SignInScreen()),
         '/login': (context) => const SignInScreen(),

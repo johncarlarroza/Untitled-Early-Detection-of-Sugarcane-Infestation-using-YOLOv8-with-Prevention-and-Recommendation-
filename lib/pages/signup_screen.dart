@@ -22,7 +22,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   TextEditingController _fullNameTextController = TextEditingController();
 
   File? _imageFile;
-  String _userType = 'Sugarcane Farmer';
+  String _userType = 'Cocoa Farmer';
 
   final _picker = ImagePicker();
 
@@ -40,8 +40,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
     try {
       String fileName = DateTime.now().millisecondsSinceEpoch.toString();
       Reference storageRef = FirebaseStorage.instance.ref().child(
-        "profile_pictures/$fileName",
-      );
+            "profile_pictures/$fileName",
+          );
 
       // Start the upload task
       UploadTask uploadTask = storageRef.putFile(image);
@@ -60,11 +60,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
   Future<void> _signUp() async {
     try {
       // Create the user in Firebase Authentication
-      UserCredential userCredential = await FirebaseAuth.instance
-          .createUserWithEmailAndPassword(
-            email: _emailTextController.text,
-            password: _passwordTextController.text,
-          );
+      UserCredential userCredential =
+          await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: _emailTextController.text,
+        password: _passwordTextController.text,
+      );
       User? user = userCredential.user;
 
       if (user != null) {
@@ -139,9 +139,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   child: CircleAvatar(
                     radius: 60,
                     backgroundColor: Colors.grey[300],
-                    backgroundImage: _imageFile != null
-                        ? FileImage(_imageFile!)
-                        : null,
+                    backgroundImage:
+                        _imageFile != null ? FileImage(_imageFile!) : null,
                     child: _imageFile == null
                         ? Icon(Icons.camera_alt, size: 40)
                         : null,
@@ -183,14 +182,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       _userType = newValue!;
                     });
                   },
-                  items: <String>['Sugarcane Farmer']
+                  items: <String>['Cocoa Farmer']
                       .map<DropdownMenuItem<String>>((String value) {
-                        return DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(value),
-                        );
-                      })
-                      .toList(),
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(),
                 ),
                 const SizedBox(height: 20),
                 firebaseUIButton(context, "Sign Up", _signUp),
