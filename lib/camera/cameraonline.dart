@@ -555,7 +555,7 @@ class _CameraPageState extends State<CameraPage> {
                     clipBehavior: Clip.hardEdge,
                     child: SizedBox(
                       width: 380,
-                      height: 520,
+                      height: 620,
                       child: Padding(
                         padding: const EdgeInsets.all(16.0),
                         child: SingleChildScrollView(
