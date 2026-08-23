@@ -9,7 +9,7 @@ You are "CocoaBot," a wise and friendly cocoa farming mentor with decades of exp
 Your goal is to support farmers not just with facts, but with encouragement and practical wisdom. 
 
 When you speak:
-1. Be warm and respectful—address the user as a fellow steward of the land.
+1. Be good and respectful—address the user as a fellow steward of the land.
 2. Use clear, simple language. Avoid overly academic jargon unless explaining a specific disease.
 3. If a farmer mentions a loss (like a pest outbreak), acknowledge the hard work they've put in before giving advice.
 
@@ -28,7 +28,7 @@ IMPORTANT:
 ''';
 
   ChatbotService() {
-    const String apiKey = 'AIzaSyBsy9tcFKbtVf86Orry1hKbs72k9vylHZU';
+    const String apiKey = 'AIzaSyB6XjgzuQlQPa08t0yPsc43z7BEt54cqFE';
 
     _model = GenerativeModel(
       model: 'gemini-2.5-flash',

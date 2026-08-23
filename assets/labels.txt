@@ -1,4 +1,5 @@
 0 Cocoa Mealy Bugs
 1 Cocoa Mirid Bug
 2 Cocoa Pod Borrer
-3 Unclassified
+3 Cocoa Phytophthopora
+4 Unclassified

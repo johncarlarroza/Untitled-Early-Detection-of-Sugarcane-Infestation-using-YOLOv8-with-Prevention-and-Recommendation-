@@ -4,23 +4,24 @@ import 'package:flutter_tflite/flutter_tflite.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'dart:typed_data';
+import 'dart:math' as math;
+import 'package:image/image.dart' as img;
 import 'package:image_gallery_saver_plus/image_gallery_saver_plus.dart';
 
 class OffCamera extends StatefulWidget {
   const OffCamera({Key? key}) : super(key: key);
 
   @override
-  State<OffCamera> createState() => _CameraPageState();
+  State<OffCamera> createState() => _OffCameraState();
 }
 
-class _CameraPageState extends State<OffCamera> {
+class _OffCameraState extends State<OffCamera> {
   CameraController? _cameraController;
   File? _image;
 
   String? _label;
-  double? _confidence; // 0-100
+  double? _confidence;
 
-  // Overlay text sections
   String? _shortDesc;
   String? _details;
   String? _biology;
@@ -28,6 +29,7 @@ class _CameraPageState extends State<OffCamera> {
 
   bool _isCameraInitialized = false;
   bool _isImageClassified = false;
+  bool _isCapturing = false;
 
   int _selectedCameraIndex = 0;
   List<CameraDescription>? _cameras;
@@ -37,46 +39,100 @@ class _CameraPageState extends State<OffCamera> {
 
   static const double _minConfidenceToAccept = 45.0;
 
-  // ✅ Your content (exactly as you wrote)
+  // zoom
+  double _minZoom = 1.0;
+  double _maxZoom = 1.0;
+  double _currentZoom = 1.0;
+
+  // focus rectangle
+  static const double focusWidth = 250;
+  static const double focusHeight = 370;
+
   static const Map<String, Map<String, String>> _pestInfo = {
-    "Cocoa Pod Borrer": {
-      "title": "Cocoa Pod Borer",
+    "Cocoa Mealy Bugs": {
+      "title": "Cocoa Mealybug",
+      "category": "Sap-sucking insect pest",
+      "risk": "Moderate",
       "desc":
-          "A tiny moth pest whose baby stage (larva) drills into cacao pods.",
-      "details":
-          "This is one of the most harmful pests for cacao farmers, especially in tropical regions. It damages the beans inside and lowers harvest quality.",
-      "biology":
-          "The adult moth lays eggs on the pod surface. When the eggs hatch, the larvae bore inside and feed on the beans.",
-      "control":
-          "Harvest pods regularly, remove infested pods, use pheromone traps, and encourage natural enemies like parasitoid wasps.",
+          "White, wax-covered mealybugs or visible cotton-like colonies were detected on the cocoa plant.",
+      "identify":
+          "Look for actual small white insects covered with a powdery or waxy coating. They often appear in clusters on pods, stems, leaf joints, and young growth. Ant activity near the colony may also be present.",
+      "damage":
+          "Mealybugs suck plant sap, weaken young tissues, and may cause poor growth. Heavy colonies can produce honeydew and encourage sooty mold, while some mealybugs can also help spread plant diseases.",
+      "mitigation":
+          "Inspect nearby pods and stems, remove heavily infested plant material when practical, and reduce ant activity around affected trees because ants may protect mealybug colonies.",
+      "recommendation":
+          "Use good field sanitation and conserve natural enemies. For localized infestations, gentle washing or an appropriate horticultural/neem-based treatment may help. Use only locally registered crop-protection products and follow label directions.",
+      "monitoring":
+          "Recheck the affected tree and neighboring trees within several days. Pay special attention to hidden clusters around pod stalks, branch joints, and shaded areas.",
     },
     "Cocoa Mirid Bug": {
-      "title": "Cocoa Mirid Bug",
-      "desc": "A small insect that sucks sap from cacao stems and pods.",
-      "details":
-          "Their feeding creates wounds that can turn into dark lesions and may cause branches to dry up.",
-      "biology":
-          "They usually feed at night and inject toxins while sucking plant sap.",
-      "control":
-          "Trim damaged parts, keep the plantation clean, and use recommended insecticides when needed.",
+      "title": "Cocoa Mirid",
+      "category": "Sap-sucking insect pest",
+      "risk": "High",
+      "desc":
+          "A mirid-like insect or feeding damage associated with cocoa mirids was detected.",
+      "identify":
+          "Look for a bug-shaped body with long legs and antennae. Color may be orange, brown, or dark. Nearby pods or stems may show dark feeding punctures, spots, or sunken lesions.",
+      "damage":
+          "Mirids feed by piercing cocoa tissues. Repeated feeding can create dark lesions, damage young pods and shoots, and contribute to dieback when infestation is severe.",
+      "mitigation":
+          "Inspect the canopy and pods for additional insects and fresh lesions. Prune severely damaged or dead material, remove unnecessary dense growth, and keep the field clean to improve inspection and airflow.",
+      "recommendation":
+          "Use an integrated pest-management approach: regular monitoring, canopy management, sanitation, conservation of natural enemies, and only locally approved insecticides when infestation reaches a damaging level.",
+      "monitoring":
+          "Check during times when mirids are easier to observe and compare old dark lesions with fresh feeding marks. Monitor young pods and tender shoots closely.",
     },
-    "Cocoa Mealy Bugs": {
-      "title": "Cocoa Mealy Bugs",
-      "desc": "Tiny white insects that look like they’re covered in cotton.",
-      "details":
-          "They weaken plants by sucking sap and can also spread diseases. Ants often protect them.",
-      "biology":
-          "They gather in groups on stems, leaves, and pods and multiply quickly.",
-      "control":
-          "Control ants, wash them off with water, or use natural sprays like neem oil.",
+    "Cocoa Pod Borrer": {
+      "title": "Cocoa Pod Borer",
+      "category": "Moth / internal pod pest",
+      "risk": "High",
+      "desc":
+          "A cocoa pod borer moth or pod symptoms consistent with cocoa pod borer infestation were detected.",
+      "identify":
+          "Adult: small moth-like shape with narrow brown wings. Infested pod: look for entry or exit signs, abnormal or uneven ripening, and pods that may appear healthy outside while beans inside are damaged or difficult to separate.",
+      "damage":
+          "Larvae enter the pod and feed internally, damaging beans and surrounding tissues. This can reduce bean quality, make beans stick together, and cause serious harvest losses.",
+      "mitigation":
+          "Harvest ripe pods frequently, collect and properly dispose of infested pod material, and avoid leaving damaged pods in the field where the pest can continue its life cycle.",
+      "recommendation":
+          "Combine frequent harvesting, pruning, field sanitation, pod disposal, and monitoring. Where appropriate, pod sleeving or other locally recommended IPM measures can reduce infestation. Follow local agricultural guidance before using pesticides.",
+      "monitoring":
+          "Inspect developing pods regularly for uneven ripening and possible entry/exit signs. Open suspicious harvested pods to confirm internal bean damage.",
+    },
+    "Cocoa Phytophthopora": {
+      "title": "Cocoa Phytophthora — Black Pod Disease",
+      "category": "Fungal-like disease / black pod",
+      "risk": "High",
+      "desc":
+          "Visible pod symptoms consistent with Phytophthora black pod disease were detected.",
+      "identify":
+          "Look for an expanding brown lesion on the cocoa pod that progressively becomes dark brown to black. The affected area usually enlarges instead of appearing as a small isolated spot and may eventually cover much of the pod.",
+      "damage":
+          "The infection can rot the pod and destroy the beans inside. In wet or humid conditions, disease can spread quickly between pods and infected plant material.",
+      "mitigation":
+          "Remove infected pods promptly and keep them away from healthy pods. Improve drainage, reduce excessive shade or dense canopy where appropriate, and remove infected debris to reduce sources of infection.",
+      "recommendation":
+          "Maintain good sanitation, regular harvesting, pruning, and airflow. During high-risk wet periods, follow local extension guidance for resistant planting material and any registered fungicide program suitable for cocoa.",
+      "monitoring":
+          "Inspect pods frequently after rain or during humid weather. Watch for new brown lesions that expand rapidly toward a dark or black rot.",
     },
     "Unclassified": {
-      "title": "Unclassified",
-      "desc": "There is no pest in the picture captured.",
-      "details": "",
-      "biology": "",
-      "control": "",
-    }
+      "title": "No Clear Pest or Disease Detected",
+      "category": "Unclassified result",
+      "risk": "No clear detection",
+      "desc":
+          "The image did not contain a sufficiently clear match for the cocoa pests or disease classes recognized by this model.",
+      "identify":
+          "This does not guarantee that the plant is pest- or disease-free. The target may be too small, blurred, poorly lit, hidden, or outside the classes supported by the model.",
+      "damage": "No specific damage assessment can be made from this result.",
+      "mitigation":
+          "Take another close, well-lit photo and place the suspected insect, colony, lesion, or pod symptom inside the guide box. Avoid heavy blur and distracting backgrounds.",
+      "recommendation":
+          "Capture several angles. If unusual symptoms continue or spread, inspect the plant manually and consult a local agriculture or crop-protection specialist.",
+      "monitoring":
+          "Continue observing the pod, leaves, stems, and nearby trees for changes in color, lesions, insects, colonies, or abnormal ripening.",
+    },
   };
 
   @override
@@ -96,25 +152,38 @@ class _CameraPageState extends State<OffCamera> {
     );
   }
 
-  // Match your labels.txt (0..3) and normalize to one of:
-  // Cocoa Mealy Bugs / Cocoa Mirid Bug / Cocoa Pod Borrer / Unclassified
   String _normalizeLabel(String raw) {
     final cleaned = raw.toLowerCase().trim();
 
+    // Text matching first makes this compatible with labels such as
+    // "0 Cocoa_Mealybug" or "Cocoa Mealybug".
+    if (cleaned.contains('mealy')) return 'Cocoa Mealy Bugs';
+    if (cleaned.contains('mirid')) return 'Cocoa Mirid Bug';
+    if (cleaned.contains('pod') &&
+        (cleaned.contains('borer') || cleaned.contains('borrer'))) {
+      return 'Cocoa Pod Borrer';
+    }
+    if (cleaned.contains('phytophthopora') ||
+        cleaned.contains('phytophthora') ||
+        cleaned.contains('phytoph') ||
+        cleaned.contains('black pod') ||
+        cleaned.contains('blackpod')) {
+      return 'Cocoa Phytophthopora';
+    }
+    if (cleaned.contains('unclassified') ||
+        cleaned.contains('unknown') ||
+        cleaned.contains('no pest')) {
+      return 'Unclassified';
+    }
+
+    // Fallback for a five-class Teachable Machine label order:
+    // Actual labels.txt order: 0 Cocoa Mealy Bugs, 1 Cocoa Mirid Bug,
+    // 2 Cocoa Pod Borrer, 3 Cocoa Phytophthopora, 4 Unclassified.
     if (cleaned.startsWith('0')) return 'Cocoa Mealy Bugs';
     if (cleaned.startsWith('1')) return 'Cocoa Mirid Bug';
     if (cleaned.startsWith('2')) return 'Cocoa Pod Borrer';
-    if (cleaned.startsWith('3')) return 'Unclassified';
-
-    // fallback if number not included
-    if (cleaned.contains('mealy')) return 'Cocoa Mealy Bugs';
-    if (cleaned.contains('mirid')) return 'Cocoa Mirid Bug';
-    if (cleaned.contains('borrer') || cleaned.contains('borer')) {
-      return 'Cocoa Pod Borrer';
-    }
-    if (cleaned.contains('unclassified') || cleaned.contains('unknown')) {
-      return 'Unclassified';
-    }
+    if (cleaned.startsWith('3')) return 'Cocoa Phytophthopora';
+    if (cleaned.startsWith('4')) return 'Unclassified';
 
     return 'Unclassified';
   }
@@ -123,14 +192,11 @@ class _CameraPageState extends State<OffCamera> {
     final info = _pestInfo[label] ?? _pestInfo["Unclassified"]!;
 
     setState(() {
-      // Title shown at top
       _label = info["title"];
-
-      // Sections
       _shortDesc = info["desc"];
-      _details = info["details"];
-      _biology = info["biology"];
-      _control = info["control"];
+      _details = info["identify"];
+      _biology = info["damage"];
+      _control = info["recommendation"];
     });
   }
 
@@ -159,7 +225,6 @@ class _CameraPageState extends State<OffCamera> {
 
     final normalized = _normalizeLabel(rawLabel);
 
-    // If model says Unclassified or confidence too low, show Unclassified
     final finalLabel =
         (normalized == "Unclassified" || conf < _minConfidenceToAccept)
             ? "Unclassified"
@@ -183,34 +248,116 @@ class _CameraPageState extends State<OffCamera> {
       _cameras![_selectedCameraIndex],
       ResolutionPreset.high,
       enableAudio: false,
+      imageFormatGroup: ImageFormatGroup.jpeg,
     );
 
     await _cameraController!.initialize();
     await _cameraController!.setFlashMode(_flashMode);
 
+    _minZoom = await _cameraController!.getMinZoomLevel();
+    _maxZoom = await _cameraController!.getMaxZoomLevel();
+    _currentZoom = _currentZoom.clamp(_minZoom, _maxZoom);
+    await _cameraController!.setZoomLevel(_currentZoom);
+
     if (!mounted) return;
     setState(() => _isCameraInitialized = true);
   }
 
+  Future<File> _cropToFocusBox(File originalFile) async {
+    final bytes = await originalFile.readAsBytes();
+    final decoded = img.decodeImage(bytes);
+
+    if (decoded == null) return originalFile;
+
+    final screenSize = MediaQuery.of(context).size;
+    final previewSize = _cameraController!.value.previewSize!;
+
+    final bool isPortrait =
+        MediaQuery.of(context).orientation == Orientation.portrait;
+
+    double previewW = isPortrait ? previewSize.height : previewSize.width;
+    double previewH = isPortrait ? previewSize.width : previewSize.height;
+
+    final screenW = screenSize.width;
+    final screenH = screenSize.height;
+
+    final scale = math.max(screenW / previewW, screenH / previewH);
+    final fittedW = previewW * scale;
+    final fittedH = previewH * scale;
+
+    final dx = (fittedW - screenW) / 2;
+    final dy = (fittedH - screenH) / 2;
+
+    final rectLeftOnScreen = (screenW - focusWidth) / 2;
+    final rectTopOnScreen = (screenH - focusHeight) / 2;
+
+    final previewLeft = rectLeftOnScreen + dx;
+    final previewTop = rectTopOnScreen + dy;
+
+    final sensorW = decoded.width.toDouble();
+    final sensorH = decoded.height.toDouble();
+
+    final scaleX = sensorW / fittedW;
+    final scaleY = sensorH / fittedH;
+
+    int cropX = (previewLeft * scaleX).round();
+    int cropY = (previewTop * scaleY).round();
+    int cropW = (focusWidth * scaleX).round();
+    int cropH = (focusHeight * scaleY).round();
+
+    cropX = cropX.clamp(0, decoded.width - 1);
+    cropY = cropY.clamp(0, decoded.height - 1);
+    cropW = cropW.clamp(1, decoded.width - cropX);
+    cropH = cropH.clamp(1, decoded.height - cropY);
+
+    final cropped = img.copyCrop(
+      decoded,
+      x: cropX,
+      y: cropY,
+      width: cropW,
+      height: cropH,
+    );
+
+    final croppedFile = File(
+      '${originalFile.parent.path}/cropped_${DateTime.now().millisecondsSinceEpoch}.jpg',
+    );
+
+    await croppedFile.writeAsBytes(img.encodeJpg(cropped, quality: 95));
+    return croppedFile;
+  }
+
   Future<void> _captureImage() async {
-    if (_cameraController == null || !_cameraController!.value.isInitialized) {
+    if (_cameraController == null ||
+        !_cameraController!.value.isInitialized ||
+        _isCapturing) {
       return;
     }
 
-    final XFile file = await _cameraController!.takePicture();
+    try {
+      setState(() => _isCapturing = true);
 
-    setState(() {
-      _image = File(file.path);
-      _label = null;
-      _confidence = null;
-      _shortDesc = null;
-      _details = null;
-      _biology = null;
-      _control = null;
-      _isImageClassified = false;
-    });
+      final XFile file = await _cameraController!.takePicture();
+      final original = File(file.path);
 
-    await _classifyImage(_image!);
+      final cropped = await _cropToFocusBox(original);
+
+      setState(() {
+        _image = cropped;
+        _label = null;
+        _confidence = null;
+        _shortDesc = null;
+        _details = null;
+        _biology = null;
+        _control = null;
+        _isImageClassified = false;
+      });
+
+      await _classifyImage(_image!);
+    } catch (e) {
+      debugPrint("Capture error: $e");
+    } finally {
+      if (mounted) setState(() => _isCapturing = false);
+    }
   }
 
   Future<void> _pickFromGallery() async {
@@ -253,13 +400,27 @@ class _CameraPageState extends State<OffCamera> {
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-          content: Text(success ? "Saved to Gallery!" : "Failed to save.")),
+        content: Text(success ? "Saved to Gallery!" : "Failed to save."),
+      ),
     );
+  }
+
+  Future<void> _setZoom(double zoom) async {
+    if (_cameraController == null || !_cameraController!.value.isInitialized) {
+      return;
+    }
+
+    final safeZoom = zoom.clamp(_minZoom, _maxZoom);
+    await _cameraController!.setZoomLevel(safeZoom);
+
+    if (!mounted) return;
+    setState(() => _currentZoom = safeZoom);
   }
 
   void _switchCamera() async {
     if (_cameras == null || _cameras!.length < 2) return;
     _selectedCameraIndex = _selectedCameraIndex == 0 ? 1 : 0;
+    _currentZoom = 1.0;
     setState(() => _isCameraInitialized = false);
     await _initializeCamera();
   }
@@ -312,32 +473,26 @@ class _CameraPageState extends State<OffCamera> {
 
   @override
   Widget build(BuildContext context) {
-    const double focusWidth = 250;
-    const double focusHeight = 370;
-
     return Scaffold(
       body: Stack(
         children: [
           _isCameraInitialized && _cameraController != null
               ? SizedBox.expand(child: CameraPreview(_cameraController!))
               : const Center(child: CircularProgressIndicator()),
-
-          // Focus box
           Center(
             child: Container(
               width: focusWidth,
               height: focusHeight,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: Colors.greenAccent, width: 1.2),
+                border: Border.all(color: Colors.greenAccent, width: 2),
               ),
             ),
           ),
-
-          // Top buttons
           Positioned(
             top: 40,
             left: 16,
+            right: 16,
             child: Row(
               children: [
                 IconButton(
@@ -354,11 +509,39 @@ class _CameraPageState extends State<OffCamera> {
                   onPressed: _switchCamera,
                   icon: const Icon(Icons.switch_camera, color: Colors.white),
                 ),
+                const Spacer(),
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: Colors.black54,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    "${_currentZoom.toStringAsFixed(1)}x",
+                    style: const TextStyle(color: Colors.white),
+                  ),
+                ),
               ],
             ),
           ),
-
-          // Bottom capture buttons
+          Positioned(
+            right: 12,
+            top: MediaQuery.of(context).size.height * 0.22,
+            bottom: MediaQuery.of(context).size.height * 0.22,
+            child: RotatedBox(
+              quarterTurns: 3,
+              child: SizedBox(
+                width: 220,
+                child: Slider(
+                  min: _minZoom,
+                  max: _maxZoom,
+                  value: _currentZoom.clamp(_minZoom, _maxZoom),
+                  onChanged: (v) => _setZoom(v),
+                ),
+              ),
+            ),
+          ),
           Positioned(
             bottom: 40,
             left: 0,
@@ -372,9 +555,18 @@ class _CameraPageState extends State<OffCamera> {
                   child: const Icon(Icons.photo, color: Colors.black),
                 ),
                 FloatingActionButton(
-                  onPressed: _captureImage,
+                  onPressed: _isCapturing ? null : _captureImage,
                   backgroundColor: Colors.green,
-                  child: const Icon(Icons.camera, color: Colors.white),
+                  child: _isCapturing
+                      ? const SizedBox(
+                          width: 22,
+                          height: 22,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
+                        )
+                      : const Icon(Icons.camera, color: Colors.white),
                 ),
                 Column(
                   mainAxisSize: MainAxisSize.min,
@@ -386,126 +578,29 @@ class _CameraPageState extends State<OffCamera> {
                       child:
                           const Icon(Icons.help_outline, color: Colors.black),
                     ),
-                    const SizedBox(height: 8),
-                    // const Text("Snap Tips",
-                    //     style: TextStyle(color: Colors.white70)),
                   ],
                 ),
               ],
             ),
           ),
-
-          // ✅ Classification Overlay (shows your full text)
           if (_isImageClassified)
-            GestureDetector(
-              onTap: _reset,
-              child: Container(
-                color: Colors.black54,
-                child: Center(
-                  child: Card(
-                    elevation: 10,
-                    child: SizedBox(
-                      width: 360,
-                      height: 560,
-                      child: Padding(
-                        padding: const EdgeInsets.all(16),
-                        child: Column(
-                          children: [
-                            // Image preview
-                            if (_image != null)
-                              Container(
-                                height: 240,
-                                width: 240,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(12),
-                                  image: DecorationImage(
-                                    image: FileImage(_image!),
-                                    fit: BoxFit.cover,
-                                  ),
-                                ),
-                              ),
-                            const SizedBox(height: 12),
-
-                            Text(
-                              _label ?? "",
-                              textAlign: TextAlign.center,
-                              style: const TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-
-                            if (_confidence != null)
-                              Padding(
-                                padding: const EdgeInsets.only(top: 6),
-                                child: Text(
-                                  "Confidence: ${_confidence!.toStringAsFixed(0)}%",
-                                  style: const TextStyle(fontSize: 14),
-                                ),
-                              ),
-
-                            const SizedBox(height: 12),
-
-                            Expanded(
-                              child: SingleChildScrollView(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    _Section(
-                                      title: "Description",
-                                      text: _shortDesc ?? "",
-                                    ),
-                                    _Section(
-                                      title: "Detailed Information",
-                                      text: _details ?? "",
-                                    ),
-                                    _Section(
-                                      title: "Biology and Behavior",
-                                      text: _biology ?? "",
-                                    ),
-                                    _Section(
-                                      title: "Control Measures",
-                                      text: _control ?? "",
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-
-                            const SizedBox(height: 10),
-
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: OutlinedButton(
-                                    onPressed: _reset,
-                                    child: const Text("Close"),
-                                  ),
-                                ),
-                                const SizedBox(width: 10),
-                                Expanded(
-                                  child: ElevatedButton(
-                                    onPressed: _saveImage,
-                                    child: const Text("Save to Gallery"),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 6),
-                            Text(
-                              "Tap outside to close",
-                              style: TextStyle(
-                                color: Colors.grey.shade600,
-                                fontSize: 12,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
+            _DetectionOverlay(
+              image: _image,
+              label: _label ?? "No Clear Pest or Disease Detected",
+              confidence: _confidence,
+              info: _pestInfo.entries
+                  .firstWhere(
+                    (entry) => entry.value["title"] == _label,
+                    orElse: () => MapEntry(
+                      "Unclassified",
+                      _pestInfo["Unclassified"]!,
                     ),
-                  ),
-                ),
-              ),
+                  )
+                  .value,
+              onClose: _reset,
+              primaryButtonText: "Save Photo",
+              primaryIcon: Icons.download_rounded,
+              onPrimaryPressed: _saveImage,
             ),
         ],
       ),
@@ -513,39 +608,413 @@ class _CameraPageState extends State<OffCamera> {
   }
 }
 
-class _Section extends StatelessWidget {
-  final String title;
-  final String text;
 
-  const _Section({required this.title, required this.text});
+class _DetectionOverlay extends StatelessWidget {
+  final File? image;
+  final String label;
+  final double? confidence;
+  final Map<String, String> info;
+  final VoidCallback onClose;
+  final String primaryButtonText;
+  final IconData primaryIcon;
+  final Future<void> Function() onPrimaryPressed;
+
+  const _DetectionOverlay({
+    required this.image,
+    required this.label,
+    required this.confidence,
+    required this.info,
+    required this.onClose,
+    required this.primaryButtonText,
+    required this.primaryIcon,
+    required this.onPrimaryPressed,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final isUnclassified = info["risk"] == "No clear detection";
+    final isDisease = (info["category"] ?? "").toLowerCase().contains("disease");
+    final accent = const Color(0xFF079B83);
+
+    final detectedText = isUnclassified
+        ? "No Clear Detection"
+        : isDisease
+            ? "Disease Detected"
+            : "Pest Detected";
+
+    return Container(
+      color: Colors.black.withOpacity(0.72),
+      child: SafeArea(
+        child: Center(
+          child: Material(
+            color: Colors.white,
+            elevation: 18,
+            clipBehavior: Clip.antiAlias,
+            borderRadius: BorderRadius.circular(18),
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(
+                maxWidth: 430,
+                maxHeight: 780,
+              ),
+              child: Column(
+                children: [
+                  Expanded(
+                    child: SingleChildScrollView(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Photo header — simple, like a plant diagnosis article.
+                          Stack(
+                            children: [
+                              image == null
+                                  ? Container(
+                                      height: 220,
+                                      width: double.infinity,
+                                      color: Colors.grey.shade200,
+                                      child: const Center(
+                                        child: Icon(
+                                          Icons.image_not_supported_outlined,
+                                          size: 52,
+                                          color: Colors.black38,
+                                        ),
+                                      ),
+                                    )
+                                  : Image.file(
+                                      image!,
+                                      height: 220,
+                                      width: double.infinity,
+                                      fit: BoxFit.cover,
+                                    ),
+                              Positioned(
+                                left: 10,
+                                top: 10,
+                                child: Material(
+                                  color: Colors.black45,
+                                  shape: const CircleBorder(),
+                                  child: IconButton(
+                                    onPressed: onClose,
+                                    icon: const Icon(
+                                      Icons.arrow_back_ios_new_rounded,
+                                      color: Colors.white,
+                                      size: 18,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+
+                          // Detection banner.
+                          Container(
+                            width: double.infinity,
+                            color: isUnclassified
+                                ? Colors.blueGrey.shade600
+                                : accent,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 11,
+                            ),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  isUnclassified
+                                      ? Icons.search_off_rounded
+                                      : isDisease
+                                          ? Icons.eco_outlined
+                                          : Icons.bug_report_outlined,
+                                  color: Colors.white,
+                                  size: 20,
+                                ),
+                                const SizedBox(width: 9),
+                                Text(
+                                  detectedText,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                                const Spacer(),
+                                if (confidence != null)
+                                  Text(
+                                    "${confidence!.toStringAsFixed(0)}%",
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                              ],
+                            ),
+                          ),
+
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(18, 16, 18, 22),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  isUnclassified
+                                      ? "The image could not be clearly classified"
+                                      : "We identified ${info["title"] ?? label} on Cocoa",
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    color: Colors.grey.shade700,
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  info["title"] ?? label,
+                                  style: TextStyle(
+                                    fontSize: 24,
+                                    height: 1.08,
+                                    fontWeight: FontWeight.w800,
+                                    color: isUnclassified
+                                        ? Colors.blueGrey.shade700
+                                        : accent,
+                                  ),
+                                ),
+                                const SizedBox(height: 10),
+                                Row(
+                                  children: [
+                                    Text(
+                                      info["category"] ?? "Detection",
+                                      style: TextStyle(
+                                        fontSize: 12.5,
+                                        fontWeight: FontWeight.w600,
+                                        color: Colors.grey.shade700,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Container(
+                                      width: 3,
+                                      height: 3,
+                                      decoration: const BoxDecoration(
+                                        color: Colors.black38,
+                                        shape: BoxShape.circle,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      "Risk: ${info["risk"] ?? "Unknown"}",
+                                      style: TextStyle(
+                                        fontSize: 12.5,
+                                        fontWeight: FontWeight.w600,
+                                        color: Colors.grey.shade700,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+
+                                const SizedBox(height: 20),
+                                const _ArticleHeading("Description"),
+                                _ArticleText(info["desc"] ?? ""),
+
+                                const _ArticleHeading("Mitigation"),
+                                _ArticleBulletText(info["mitigation"] ?? ""),
+
+                                const _ArticleHeading("How to Identify"),
+                                _ArticleBulletText(info["identify"] ?? ""),
+
+                                if (!isUnclassified) ...[
+                                  const _ArticleHeading("Possible Damage"),
+                                  _ArticleText(info["damage"] ?? ""),
+                                ],
+
+                                const _ArticleHeading("Management Recommendation"),
+                                _ArticleBulletText(info["recommendation"] ?? ""),
+
+                                const _ArticleHeading("Monitoring"),
+                                _ArticleText(info["monitoring"] ?? ""),
+
+                                const SizedBox(height: 6),
+                                Divider(color: Colors.grey.shade300),
+                                const SizedBox(height: 8),
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Icon(
+                                      Icons.info_outline,
+                                      size: 17,
+                                      color: Colors.grey.shade600,
+                                    ),
+                                    const SizedBox(width: 7),
+                                    Expanded(
+                                      child: Text(
+                                        "Use this result as a field guide. Confirm visible signs before applying any treatment.",
+                                        style: TextStyle(
+                                          fontSize: 11.5,
+                                          height: 1.4,
+                                          color: Colors.grey.shade600,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+
+                  // Simple action bar, kept outside the article content.
+                  Container(
+                    padding: const EdgeInsets.fromLTRB(14, 10, 14, 14),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      border: Border(
+                        top: BorderSide(color: Colors.grey.shade200),
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: OutlinedButton(
+                            onPressed: onClose,
+                            style: OutlinedButton.styleFrom(
+                              foregroundColor: accent,
+                              side: const BorderSide(color: Color(0xFF079B83)),
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
+                            child: const Text(
+                              "Scan Again",
+                              style: TextStyle(fontWeight: FontWeight.w700),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: ElevatedButton.icon(
+                            onPressed: () => onPrimaryPressed(),
+                            icon: Icon(primaryIcon, size: 18),
+                            label: Text(primaryButtonText),
+                            style: ElevatedButton.styleFrom(
+                              elevation: 0,
+                              backgroundColor: accent,
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _ArticleHeading extends StatelessWidget {
+  final String text;
+  const _ArticleHeading(this.text);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 15, bottom: 6),
+      child: Text(
+        text,
+        style: const TextStyle(
+          fontSize: 14.5,
+          fontWeight: FontWeight.w800,
+          color: Color(0xFF222222),
+        ),
+      ),
+    );
+  }
+}
+
+class _ArticleText extends StatelessWidget {
+  final String text;
+  const _ArticleText(this.text);
 
   @override
   Widget build(BuildContext context) {
     if (text.trim().isEmpty) return const SizedBox.shrink();
-
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 10),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            title,
-            style: const TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 13,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            text,
-            style: TextStyle(
-              fontSize: 13,
-              height: 1.35,
-              color: Colors.grey.shade700,
-            ),
-          ),
-        ],
+    return Text(
+      text,
+      style: TextStyle(
+        fontSize: 13,
+        height: 1.45,
+        color: Colors.grey.shade800,
       ),
+    );
+  }
+}
+
+class _ArticleBulletText extends StatelessWidget {
+  final String text;
+  const _ArticleBulletText(this.text);
+
+  List<String> _toPoints(String value) {
+    // Keep the original pest information, but display it as short article bullets.
+    final cleaned = value.replaceAll('\n', ' ').trim();
+    if (cleaned.isEmpty) return const [];
+
+    final sentenceRegex = RegExp(r'(?<=[.!?])\s+');
+    final parts = cleaned
+        .split(sentenceRegex)
+        .map((e) => e.trim())
+        .where((e) => e.isNotEmpty)
+        .toList();
+
+    return parts.isEmpty ? [cleaned] : parts;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final points = _toPoints(text);
+    if (points.isEmpty) return const SizedBox.shrink();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: points
+          .map(
+            (point) => Padding(
+              padding: const EdgeInsets.only(bottom: 5),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(top: 7),
+                    child: Container(
+                      width: 4,
+                      height: 4,
+                      decoration: const BoxDecoration(
+                        color: Color(0xFF555555),
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      point,
+                      style: TextStyle(
+                        fontSize: 13,
+                        height: 1.42,
+                        color: Colors.grey.shade800,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          )
+          .toList(),
     );
   }
 }
