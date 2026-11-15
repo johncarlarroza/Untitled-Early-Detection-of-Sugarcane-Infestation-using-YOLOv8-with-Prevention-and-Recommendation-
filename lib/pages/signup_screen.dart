@@ -56,7 +56,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     }
   }
 
-  /// Handles the sign-up process
+  /// Handles the sign-up process  
   Future<void> _signUp() async {
     try {
       // Create the user in Firebase Authentication

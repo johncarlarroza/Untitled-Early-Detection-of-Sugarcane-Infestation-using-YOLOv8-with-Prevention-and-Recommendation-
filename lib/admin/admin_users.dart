@@ -1,334 +1,272 @@
-import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
-class UsersPage extends StatelessWidget {
+class UsersPage extends StatefulWidget {
   const UsersPage({super.key});
 
-  String _formatDate(Timestamp? timestamp) {
-    if (timestamp == null) return 'No date';
-    final date = timestamp.toDate();
-    return "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}";
-  }
+  @override
+  State<UsersPage> createState() => _UsersPageState();
+}
 
-  Widget _buildHeader() {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(22),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(24),
-        gradient: const LinearGradient(
-          colors: [
-            Color(0xFF0F172A),
-            Color(0xFF1E3A8A),
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.blue.withOpacity(0.18),
-            blurRadius: 18,
-            offset: const Offset(0, 8),
-          ),
-        ],
-      ),
-      child: const Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Users Management',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 26,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          SizedBox(height: 8),
-          Text(
-            'This section shows all registered users in the system.',
-            style: TextStyle(
-              color: Colors.white70,
-              fontSize: 13.5,
-              height: 1.5,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+class _UsersPageState extends State<UsersPage> {
+  static const background = Color(0xFFF7F9F7);
+  static const surface = Colors.white;
+  static const border = Color(0xFFE0E7E1);
+  static const orange = Color(0xFFFF982F);
+  static const green = Color(0xFF24B75A);
+  static const muted = Color(0xFF647568);
 
-  Widget _buildSummaryCard(int totalUsers) {
-    return Container(
-      padding: const EdgeInsets.all(18),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.blue.withOpacity(0.12)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.blue.withOpacity(0.08),
-            blurRadius: 14,
-            offset: const Offset(0, 6),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Container(
-            height: 56,
-            width: 56,
-            decoration: BoxDecoration(
-              color: Colors.blue.withOpacity(0.12),
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: const Icon(
-              Icons.people_alt_rounded,
-              color: Colors.blue,
-              size: 30,
-            ),
-          ),
-          const SizedBox(width: 14),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Total Registered Users',
-                style: TextStyle(
-                  color: Colors.grey.shade700,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                totalUsers.toString(),
-                style: const TextStyle(
-                  color: Colors.blue,
-                  fontSize: 26,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildUserCard(Map<String, dynamic> user) {
-    final fullName = (user['fullName'] ?? 'No name').toString();
-    final username = (user['username'] ?? 'No username').toString();
-    final email = (user['email'] ?? 'No email').toString();
-    final profilePictureUrl = (user['profilePictureUrl'] ?? '').toString();
-    final createdAt =
-        user['createdAt'] != null ? user['createdAt'] as Timestamp : null;
-
-    return Container(
-      margin: const EdgeInsets.only(bottom: 14),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(22),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 14,
-            offset: const Offset(0, 6),
-          ),
-        ],
-        border: Border.all(color: Colors.grey.withOpacity(0.08)),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            CircleAvatar(
-              radius: 30,
-              backgroundColor: Colors.blue.withOpacity(0.10),
-              backgroundImage: profilePictureUrl.isNotEmpty
-                  ? NetworkImage(profilePictureUrl)
-                  : null,
-              child: profilePictureUrl.isEmpty
-                  ? const Icon(Icons.person, color: Colors.blue, size: 30)
-                  : null,
-            ),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    fullName,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 17,
-                    ),
-                  ),
-                  const SizedBox(height: 6),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 5,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.blue.withOpacity(0.08),
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                    child: Text(
-                      '@$username',
-                      style: const TextStyle(
-                        color: Colors.blue,
-                        fontSize: 12.5,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  Row(
-                    children: [
-                      Icon(Icons.email_outlined,
-                          size: 16, color: Colors.grey.shade600),
-                      const SizedBox(width: 6),
-                      Expanded(
-                        child: Text(
-                          email,
-                          style: TextStyle(
-                            color: Colors.grey.shade800,
-                            fontSize: 13.5,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  Row(
-                    children: [
-                      Icon(Icons.calendar_today_outlined,
-                          size: 16, color: Colors.grey.shade600),
-                      const SizedBox(width: 6),
-                      Text(
-                        "Joined: ${_formatDate(createdAt)}",
-                        style: TextStyle(
-                          color: Colors.grey.shade600,
-                          fontSize: 12.8,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+  final _search = TextEditingController();
+  String _sort = 'Newest first';
 
   @override
-  Widget build(BuildContext context) {
+  void dispose() {
+    _search.dispose();
+    super.dispose();
+  }
+
+  DateTime? _createdAt(Map<String, dynamic> user) {
+    final value = user['createdAt'];
+    if (value is Timestamp) return value.toDate();
+    if (value is DateTime) return value;
+    if (value is String) return DateTime.tryParse(value);
+    return null;
+  }
+
+  String _text(dynamic value, String fallback) {
+    final result = (value ?? '').toString().trim();
+    return result.isEmpty ? fallback : result;
+  }
+
+  Widget _avatar(Map<String, dynamic> user) {
+    final url = _text(user['profilePictureUrl'], '');
+    final name = _text(user['fullName'], 'User');
+    return CircleAvatar(
+      radius: 23,
+      backgroundColor: const Color(0xFFE3F4E8),
+      foregroundColor: green,
+      backgroundImage: url.startsWith('https://') ? NetworkImage(url) : null,
+      child: url.startsWith('https://')
+          ? null
+          : Text(name.substring(0, 1).toUpperCase(),
+              style: const TextStyle(fontWeight: FontWeight.w700)),
+    );
+  }
+
+  Widget _userCard(Map<String, dynamic> user) {
+    final name = _text(user['fullName'], 'Unnamed user');
+    final username = _text(user['username'], 'No username');
+    final email = _text(user['email'], 'No email');
+    final joined = _createdAt(user);
     return Container(
-      color: const Color(0xFFF6F8FC),
-      child: StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance.collection('users').snapshots(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
-          if (snapshot.hasError) {
-            return Center(
-              child: Text(
-                'Error loading users.',
-                style: TextStyle(color: Colors.red.shade600),
-              ),
-            );
-          }
-
-          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-            return SingleChildScrollView(
-              padding: const EdgeInsets.all(18),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildHeader(),
-                  const SizedBox(height: 18),
-                  _buildSummaryCard(0),
-                  const SizedBox(height: 30),
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(30),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(22),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.05),
-                          blurRadius: 14,
-                          offset: const Offset(0, 6),
-                        ),
-                      ],
-                    ),
-                    child: const Column(
-                      children: [
-                        Icon(Icons.people_outline,
-                            size: 56, color: Colors.grey),
-                        SizedBox(height: 12),
-                        Text(
-                          "No users found.",
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            );
-          }
-
-          final users = snapshot.data!.docs;
-
-          return SingleChildScrollView(
-            padding: const EdgeInsets.all(18),
+      margin: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: surface,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: border),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _avatar(user),
+          const SizedBox(width: 12),
+          Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildHeader(),
-                const SizedBox(height: 18),
-                _buildSummaryCard(users.length),
-                const SizedBox(height: 18),
-                const Text(
-                  "Registered Users",
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  "Below is the list of users currently stored in your database.",
-                  style: TextStyle(
-                    color: Colors.grey.shade700,
-                    fontSize: 13.5,
-                  ),
-                ),
-                const SizedBox(height: 16),
-                ListView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: users.length,
-                  itemBuilder: (context, index) {
-                    final user = users[index].data() as Map<String, dynamic>;
-                    return _buildUserCard(user);
-                  },
-                ),
+                Text(name,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(color: Color(0xFF18271D),
+                        fontSize: 15, fontWeight: FontWeight.w700)),
+                const SizedBox(height: 3),
+                Text('@$username',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(color: green, fontSize: 12)),
+                const SizedBox(height: 8),
+                Text(email,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(color: muted, fontSize: 12)),
+                const SizedBox(height: 5),
+                Text('Joined ${joined == null ? 'Unknown' : DateFormat('MMM d, yyyy').format(joined)}',
+                    style: const TextStyle(color: muted, fontSize: 11)),
               ],
             ),
-          );
+          ),
+        ],
+      ),
+    );
+  }
+
+  InputDecoration _searchDecoration() => InputDecoration(
+        hintText: 'Search name, username or email',
+        hintStyle: const TextStyle(color: muted, fontSize: 13),
+        prefixIcon: const Icon(Icons.search, color: muted),
+        suffixIcon: _search.text.isNotEmpty
+            ? IconButton(
+                tooltip: 'Clear search',
+                onPressed: () => setState(_search.clear),
+                icon: const Icon(Icons.close, color: muted, size: 19))
+            : null,
+        filled: true,
+        fillColor: surface,
+        contentPadding: const EdgeInsets.symmetric(vertical: 14, horizontal: 12),
+        enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: const BorderSide(color: border)),
+        focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: const BorderSide(color: orange)),
+      );
+
+  @override
+  Widget build(BuildContext context) {
+    return ColoredBox(
+      color: background,
+      child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+        stream: FirebaseFirestore.instance.collection('users').snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            return const Center(child: Text('Could not load users. Check your connection and permissions.',
+                textAlign: TextAlign.center,
+                style: TextStyle(color: Color(0xFF18271D))));
+          }
+          if (!snapshot.hasData) {
+            return const Center(child: CircularProgressIndicator(color: orange));
+          }
+          final all = snapshot.data!.docs.map((d) => d.data()).toList();
+          final query = _search.text.trim().toLowerCase();
+          final filtered = all.where((user) {
+            if (query.isEmpty) return true;
+            return ['fullName', 'username', 'email'].any((key) =>
+                (user[key] ?? '').toString().toLowerCase().contains(query));
+          }).toList();
+          filtered.sort((a, b) {
+            if (_sort == 'Name A–Z') {
+              return _text(a['fullName'], '').toLowerCase().compareTo(
+                  _text(b['fullName'], '').toLowerCase());
+            }
+            final left = _createdAt(a);
+            final right = _createdAt(b);
+            if (left == null && right == null) return 0;
+            if (left == null) return 1;
+            if (right == null) return -1;
+            return _sort == 'Oldest first'
+                ? left.compareTo(right)
+                : right.compareTo(left);
+          });
+
+          return LayoutBuilder(builder: (context, constraints) {
+            final compact = constraints.maxWidth < 550;
+            return ListView(
+              padding: EdgeInsets.all(compact ? 16 : 26),
+              children: [
+                const Text('Users',
+                    style: TextStyle(color: Color(0xFF18271D),
+                        fontSize: 26, fontWeight: FontWeight.w800)),
+                const SizedBox(height: 5),
+                const Text('Registered accounts',
+                    style: TextStyle(color: muted, fontSize: 13)),
+                const SizedBox(height: 20),
+                Container(
+                  padding: const EdgeInsets.all(18),
+                  decoration: BoxDecoration(
+                    color: surface,
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(color: border),
+                  ),
+                  child: Row(children: [
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                          color: orange.withOpacity(.13),
+                          borderRadius: BorderRadius.circular(12)),
+                      child: const Icon(Icons.people_outline, color: orange)),
+                    const SizedBox(width: 14),
+                    Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                      const Text('Total Users',
+                          style: TextStyle(color: muted, fontSize: 12)),
+                      const SizedBox(height: 3),
+                      Text('${all.length}',
+                          style: const TextStyle(color: Color(0xFF18271D),
+                              fontSize: 27, fontWeight: FontWeight.bold)),
+                    ]),
+                  ]),
+                ),
+                const SizedBox(height: 22),
+                if (compact) ...[
+                  TextField(
+                    controller: _search,
+                    onChanged: (_) => setState(() {}),
+                    style: const TextStyle(color: Color(0xFF18271D)),
+                    decoration: _searchDecoration(),
+                  ),
+                  const SizedBox(height: 12),
+                  _sortMenu(),
+                ] else
+                  Row(children: [
+                    Expanded(child: TextField(
+                      controller: _search,
+                      onChanged: (_) => setState(() {}),
+                      style: const TextStyle(color: Color(0xFF18271D)),
+                      decoration: _searchDecoration(),
+                    )),
+                    const SizedBox(width: 12),
+                    _sortMenu(),
+                  ]),
+                const SizedBox(height: 18),
+                Row(children: [
+                  const Expanded(child: Text('User List',
+                      style: TextStyle(color: Color(0xFF18271D),
+                          fontWeight: FontWeight.w700, fontSize: 17))),
+                  Text('${filtered.length} shown',
+                      style: const TextStyle(color: muted, fontSize: 12)),
+                ]),
+                const SizedBox(height: 12),
+                if (filtered.isEmpty)
+                  Container(
+                    padding: const EdgeInsets.all(30),
+                    decoration: BoxDecoration(
+                        color: surface,
+                        borderRadius: BorderRadius.circular(14),
+                        border: Border.all(color: border)),
+                    child: Center(child: Text(
+                        all.isEmpty ? 'No registered users yet.' : 'No matching users.',
+                        style: const TextStyle(color: muted))),
+                  )
+                else
+                  ...filtered.map(_userCard),
+              ],
+            );
+          });
         },
       ),
     );
   }
+
+  Widget _sortMenu() => Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12),
+        decoration: BoxDecoration(
+            color: surface,
+            border: Border.all(color: border),
+            borderRadius: BorderRadius.circular(12)),
+        child: DropdownButtonHideUnderline(
+          child: DropdownButton<String>(
+            value: _sort,
+            dropdownColor: surface,
+            iconEnabledColor: orange,
+            style: const TextStyle(color: Color(0xFF18271D), fontSize: 13),
+            items: ['Newest first', 'Oldest first', 'Name A–Z']
+                .map((value) => DropdownMenuItem(value: value, child: Text(value)))
+                .toList(),
+            onChanged: (value) {
+              if (value != null) setState(() => _sort = value);
+            },
+          ),
+        ),
+      );
 }

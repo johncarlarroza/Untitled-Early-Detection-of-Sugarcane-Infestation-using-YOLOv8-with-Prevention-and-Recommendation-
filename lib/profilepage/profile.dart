@@ -233,16 +233,16 @@ class _ProfilePageState extends State<ProfilePage> {
                       onTap: () => _navigateToLocation(context),
                     ),
 
-                    _buildListTile(
-                      icon: Icons.info_outline,
-                      title: 'Charts',
-                      onTap: () => _navigateToCharts(context),
-                    ),
-                    _buildListTile(
-                      icon: Icons.info_outline,
-                      title: 'Gallery',
-                      onTap: () => _navigateToGallery(context),
-                    ),
+                    // _buildListTile(
+                    //   icon: Icons.info_outline,
+                    //   title: 'Charts',
+                    //   onTap: () => _navigateToCharts(context),
+                    // ),
+                    // // _buildListTile(
+                    //   icon: Icons.info_outline,
+                    //   title: 'Gallery',
+                    //   onTap: () => _navigateToGallery(context),
+                    // ),
                     _buildListTile(
                       icon: Icons.info_outline,
                       title: 'App Info',

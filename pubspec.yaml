@@ -35,6 +35,7 @@ dependencies:
   intl: ^0.20.2
   pdf: ^3.11.3
   printing: ^5.14.2
+  cloud_functions: ^5.6.2
 
 
 
@@ -97,9 +98,9 @@ flutter:
     - assets/b3.gif
     - assets/b4.gif
     - assets/b5.gif
-    
+    - assets/cocoabot_v2_multilabel.tflite
+    - assets/labels_multilabel.txt
 
-    
     - assets/pests/
     - assets/diseases/
     - assets/varieties/

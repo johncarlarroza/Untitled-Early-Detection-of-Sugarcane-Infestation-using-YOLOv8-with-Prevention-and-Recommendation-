@@ -98,7 +98,7 @@ class _AdminSignInPageState extends State<AdminSignInPage> {
                   _passwordTextController,
                 ),
                 const SizedBox(height: 20),
-                firebaseUIButton(context, "Admin Sign In", _adminSignIn),
+                firebaseUIButton(context, "Sign In", _adminSignIn),
                 const SizedBox(height: 20),
                 GestureDetector(
                   onTap: () {

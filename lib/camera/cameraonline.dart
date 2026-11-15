@@ -8,6 +8,7 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'dart:math' as math;
 import 'package:image/image.dart' as img;
+import 'dart:math';
 
 class CameraPage extends StatefulWidget {
   const CameraPage({Key? key}) : super(key: key);
@@ -24,6 +25,10 @@ class _CameraPageState extends State<CameraPage> {
   double? _confidence;
   String? _description;
 
+  // Multiple classification results that pass the internal acceptance threshold.
+  List<String> _detectedLabels = [];
+  Map<String, double> _detectedScores = {};
+
   bool _isCameraInitialized = false;
   bool _isImageClassified = false;
   bool _isCapturing = false;
@@ -39,7 +44,8 @@ class _CameraPageState extends State<CameraPage> {
   final double focusBoxWidth = 250.0;
   final double focusBoxHeight = 400.0;
 
-  static const double _minConfidenceToAccept = 45.0;
+  static const double _minConfidenceToAccept = 50.0;
+  late final Future<void> _modelReady;
 
   double _minZoom = 1.0;
   double _maxZoom = 1.0;
@@ -134,47 +140,34 @@ class _CameraPageState extends State<CameraPage> {
 
   Future<void> _tfLiteInit() async {
     await Tflite.loadModel(
-      model: "assets/model_unquant.tflite",
-      labels: "assets/labels.txt",
+      model: "assets/cocoabot_v2_multilabel.tflite",
+      labels: "assets/labels_multilabel.txt",
       numThreads: 1,
       isAsset: true,
       useGpuDelegate: false,
     );
   }
 
+  static const List<String> _modelLabels = [
+    'Cocoa Mealy Bugs',
+    'Cocoa Mirid Bug',
+    'Cocoa Phytophthopora',
+    'Cocoa Pod Borrer',
+  ];
+
   String _normalizeLabel(String raw) {
     final cleaned = raw.toLowerCase().trim();
-
-    // Text matching first makes this compatible with labels such as
-    // "0 Cocoa_Mealybug" or "Cocoa Mealybug".
-    if (cleaned.contains('mealy')) return 'Cocoa Mealy Bugs';
-    if (cleaned.contains('mirid')) return 'Cocoa Mirid Bug';
-    if (cleaned.contains('pod') &&
-        (cleaned.contains('borer') || cleaned.contains('borrer'))) {
-      return 'Cocoa Pod Borrer';
-    }
-    if (cleaned.contains('phytophthopora') ||
-        cleaned.contains('phytophthora') ||
-        cleaned.contains('phytoph') ||
-        cleaned.contains('black pod') ||
-        cleaned.contains('blackpod')) {
-      return 'Cocoa Phytophthopora';
-    }
-    if (cleaned.contains('unclassified') ||
-        cleaned.contains('unknown') ||
-        cleaned.contains('no pest')) {
-      return 'Unclassified';
+    final numericIndex = int.tryParse(cleaned);
+    if (numericIndex != null &&
+        numericIndex >= 0 &&
+        numericIndex < _modelLabels.length) {
+      return _modelLabels[numericIndex];
     }
 
-    // Fallback for a five-class Teachable Machine label order:
-    // Actual labels.txt order: 0 Cocoa Mealy Bugs, 1 Cocoa Mirid Bug,
-    // 2 Cocoa Pod Borrer, 3 Cocoa Phytophthopora, 4 Unclassified.
-    if (cleaned.startsWith('0')) return 'Cocoa Mealy Bugs';
-    if (cleaned.startsWith('1')) return 'Cocoa Mirid Bug';
-    if (cleaned.startsWith('2')) return 'Cocoa Pod Borrer';
-    if (cleaned.startsWith('3')) return 'Cocoa Phytophthopora';
-    if (cleaned.startsWith('4')) return 'Unclassified';
-
+    final noPrefix = cleaned.replaceFirst(RegExp(r'^\d+\s+'), '');
+    for (final label in _modelLabels) {
+      if (noPrefix == label.toLowerCase()) return label;
+    }
     return 'Unclassified';
   }
 
@@ -191,44 +184,69 @@ class _CameraPageState extends State<CameraPage> {
   }
 
   Future<void> _classifyImage(File image) async {
-    final recognitions = await Tflite.runModelOnImage(
-      path: image.path,
-      imageMean: 0.0,
-      imageStd: 255.0,
-      numResults: 3,
-      threshold: 0.2,
-      asynch: true,
-    );
+    try {
+      await _modelReady;
 
-    if (!mounted) return;
+      // This model embeds RGB preprocessing (0..255 -> -1..1).
+      final results = await Tflite.runModelOnImage(
+        path: image.path,
+        imageMean: 0.0,
+        imageStd: 1.0,
+        threshold: 0.0,
+        numResults: 4,
+        asynch: true,
+      );
 
-    if (recognitions == null || recognitions.isEmpty) {
+      debugPrint('COCOABOT MULTILABEL RAW RESULTS: $results');
+      if (!mounted) return;
+
+      final scores = <String, double>{};
+      for (final result in results ?? []) {
+        final idx = result['index'];
+        if (idx is! num || idx.toInt() < 0 ||
+            idx.toInt() >= _modelLabels.length) continue;
+        final rawScore = result['confidence'];
+        if (rawScore is! num || !rawScore.toDouble().isFinite) continue;
+        scores[_modelLabels[idx.toInt()]] = rawScore.toDouble();
+      }
+
+      final detected = _modelLabels.where(
+        (label) => (scores[label] ?? 0.0) >=
+            _minConfidenceToAccept / 100.0,
+      ).toList()
+        ..sort((a, b) => (scores[b] ?? 0).compareTo(scores[a] ?? 0));
+
+      final primary = detected.isEmpty ? 'Unclassified' : detected.first;
+      final primaryScore = detected.isEmpty
+          ? null
+          : (scores[primary] ?? 0) * 100.0;
+
+      debugPrint('COCOABOT DETECTED: $detected; PRIMARY: $primary');
+      if (!mounted) return;
       setState(() {
-        _label = "Unclassified";
-        _confidence = null;
-        _description = _getPestDescription("Unclassified");
+        _detectedLabels = detected;
+        _detectedScores = {for (final label in detected) label: (scores[label] ?? 0) * 100};
+        _confidence = primaryScore;
         _isImageClassified = true;
+        _label = primary;
+        _description = detected.isEmpty
+            ? _getPestDescription('Unclassified')
+            : detected.map((label) =>
+                '$label\\n${_getPestDescription(label)}').join('\\n\\n');
       });
-      return;
+    } catch (error, stackTrace) {
+      debugPrint('COCOABOT inference error: $error');
+      debugPrint('$stackTrace');
+      if (!mounted) return;
+      setState(() {
+        _detectedLabels = [];
+        _detectedScores = {};
+        _confidence = null;
+        _isImageClassified = true;
+        _label = 'Unclassified';
+        _description = _getPestDescription('Unclassified');
+      });
     }
-
-    final rawLabel = (recognitions[0]['label'] ?? '').toString();
-    final conf01 = (recognitions[0]['confidence'] ?? 0.0) as double;
-    final conf = conf01 * 100;
-
-    final normalized = _normalizeLabel(rawLabel);
-
-    final finalLabel =
-        (normalized == "Unclassified" || conf < _minConfidenceToAccept)
-            ? "Unclassified"
-            : normalized;
-
-    setState(() {
-      _label = finalLabel;
-      _confidence = conf;
-      _description = _getPestDescription(finalLabel);
-      _isImageClassified = true;
-    });
   }
 
   Future<void> _initializeCamera() async {
@@ -344,6 +362,8 @@ class _CameraPageState extends State<CameraPage> {
         _label = null;
         _confidence = null;
         _description = null;
+        _detectedLabels = [];
+        _detectedScores = {};
         _isImageClassified = false;
       });
 
@@ -373,6 +393,8 @@ class _CameraPageState extends State<CameraPage> {
       _label = null;
       _confidence = null;
       _description = null;
+      _detectedLabels = [];
+      _detectedScores = {};
       _isImageClassified = false;
     });
 
@@ -416,6 +438,8 @@ class _CameraPageState extends State<CameraPage> {
       _label = null;
       _confidence = null;
       _description = null;
+      _detectedLabels = [];
+      _detectedScores = {};
     });
   }
 
@@ -468,6 +492,9 @@ class _CameraPageState extends State<CameraPage> {
         'userId': userId,
         'imageUrl': imageUrl,
         'label': _label ?? "Unclassified",
+        'labels': _detectedLabels.isEmpty ? ['Unclassified'] : _detectedLabels,
+        'detectionTypeCount': _detectedLabels.length,
+        'detectionScores': _detectedScores,
         'confidence': _confidence ?? 0.0,
         'description': _description ?? "No description",
         'timestamp': FieldValue.serverTimestamp(),
@@ -531,7 +558,7 @@ class _CameraPageState extends State<CameraPage> {
   @override
   void initState() {
     super.initState();
-    _tfLiteInit();
+    _modelReady = _tfLiteInit();
     _initializeCamera();
   }
 
@@ -700,7 +727,9 @@ class _CameraPageState extends State<CameraPage> {
               label: (_label == "Unclassified")
                   ? "No Clear Pest or Disease Detected"
                   : (_pestInfo[_label]?["title"] ?? _label ?? "Detection Result"),
-              confidence: _confidence,
+              detectedLabels: _detectedLabels,
+              detectedScores: _detectedScores,
+              pestInfo: _pestInfo,
               info: _pestInfo[_label] ?? _pestInfo["Unclassified"]!,
               onClose: _resetClassification,
               primaryButtonText: "Save Detection",
@@ -716,7 +745,9 @@ class _CameraPageState extends State<CameraPage> {
 class _DetectionOverlay extends StatelessWidget {
   final File? image;
   final String label;
-  final double? confidence;
+  final List<String> detectedLabels;
+  final Map<String, double> detectedScores;
+  final Map<String, Map<String, String>> pestInfo;
   final Map<String, String> info;
   final VoidCallback onClose;
   final String primaryButtonText;
@@ -726,7 +757,9 @@ class _DetectionOverlay extends StatelessWidget {
   const _DetectionOverlay({
     required this.image,
     required this.label,
-    required this.confidence,
+    required this.detectedLabels,
+    required this.detectedScores,
+    required this.pestInfo,
     required this.info,
     required this.onClose,
     required this.primaryButtonText,
@@ -740,11 +773,12 @@ class _DetectionOverlay extends StatelessWidget {
     final isDisease = (info["category"] ?? "").toLowerCase().contains("disease");
     final accent = const Color(0xFF079B83);
 
-    final detectedText = isUnclassified
+    final detectionCount = detectedLabels.length;
+    final detectedText = isUnclassified || detectionCount == 0
         ? "No Clear Detection"
-        : isDisease
-            ? "Disease Detected"
-            : "Pest Detected";
+        : detectionCount == 1
+            ? "1 Pest/Disease Type Detected"
+            : "$detectionCount Pest/Disease Types Detected";
 
     return Container(
       color: Colors.black.withOpacity(0.72),
@@ -839,15 +873,6 @@ class _DetectionOverlay extends StatelessWidget {
                                   ),
                                 ),
                                 const Spacer(),
-                                if (confidence != null)
-                                  Text(
-                                    "${confidence!.toStringAsFixed(0)}%",
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.w700,
-                                    ),
-                                  ),
                               ],
                             ),
                           ),
@@ -909,6 +934,64 @@ class _DetectionOverlay extends StatelessWidget {
                                     ),
                                   ],
                                 ),
+
+                                if (!isUnclassified && detectedLabels.length > 1) ...[
+                                  const SizedBox(height: 18),
+                                  const _ArticleHeading("Detected Types"),
+                                  ...detectedLabels.map((detectedLabel) {
+                                    final detectedInfo = pestInfo[detectedLabel];
+                                    return Container(
+                                      width: double.infinity,
+                                      margin: const EdgeInsets.only(bottom: 8),
+                                      padding: const EdgeInsets.all(11),
+                                      decoration: BoxDecoration(
+                                        color: const Color(0xFFF1F8F6),
+                                        borderRadius: BorderRadius.circular(10),
+                                        border: Border.all(
+                                          color: const Color(0xFF079B83).withOpacity(0.20),
+                                        ),
+                                      ),
+                                      child: Row(
+                                        children: [
+                                          const Icon(
+                                            Icons.check_circle_outline_rounded,
+                                            size: 19,
+                                            color: Color(0xFF079B83),
+                                          ),
+                                          const SizedBox(width: 9),
+                                          Expanded(
+                                            child: Column(
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  detectedInfo?["title"] ?? detectedLabel,
+                                                  style: const TextStyle(
+                                                    fontSize: 13.5,
+                                                    fontWeight: FontWeight.w800,
+                                                    color: Color(0xFF222222),
+                                                  ),
+                                                ),
+                                                const SizedBox(height: 2),
+                                                Text(
+                                                  'Confidence: ${(detectedScores[detectedLabel] ?? 0).toStringAsFixed(1)}%',
+                                                  style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: Color(0xFF079B83)),
+                                                ),
+                                                const SizedBox(height: 2),
+                                                Text(
+                                                  detectedInfo?["category"] ?? "Detection",
+                                                  style: TextStyle(
+                                                    fontSize: 11.5,
+                                                    color: Colors.grey.shade700,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  }),
+                                ],
 
                                 const SizedBox(height: 20),
                                 const _ArticleHeading("Description"),

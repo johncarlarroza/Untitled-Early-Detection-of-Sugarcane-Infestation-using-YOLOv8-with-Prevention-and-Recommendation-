@@ -124,10 +124,10 @@ class AppInfoPage extends StatelessWidget {
                                   ),
                                 ],
                               ),
-                              child: const Image(
-                                image: AssetImage('assets/cict.png'),
-                                height: 70,
-                              ),
+                              // child: const Image(
+                              //   image: AssetImage('assets/cict.png'),
+                              //   height: 70,
+                              // ),
                             ),
 
                             const SizedBox(height: 20),
